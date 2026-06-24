@@ -25,7 +25,9 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
   const logsEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (logs.length > 1) {
+      logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }
   }, [logs])
 
   const handleSubmit = (e: React.FormEvent) => {
