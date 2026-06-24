@@ -25,6 +25,10 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
   const prevLogsLengthRef = useRef(1)
 
   useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
+  useEffect(() => {
     if (logs.length > 1 && logs.length > prevLogsLengthRef.current) {
       // Wait a tiny bit for the framer-motion animation to mount into the DOM
       setTimeout(() => {
