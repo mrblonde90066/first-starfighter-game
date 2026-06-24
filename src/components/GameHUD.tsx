@@ -22,11 +22,16 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
       timestamp: new Date().toLocaleTimeString()
     }
   ])
-  const logsEndRef = useRef<HTMLDivElement>(null)
+  const prevLogsLengthRef = useRef(1)
 
   useEffect(() => {
-    if (logs.length > 1) {
-      logsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (logs.length > 1 && logs.length > prevLogsLengthRef.current) {
+      // Wait a tiny bit for the framer-motion animation to mount into the DOM
+      setTimeout(() => {
+        const newMessage = document.getElementById(`log-${logs.length - 1}`)
+        newMessage?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+      prevLogsLengthRef.current = logs.length
     }
   }, [logs])
 
@@ -81,6 +86,7 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
         <div className="flex-1 overflow-y-auto p-6 space-y-6 font-mono text-sm scrollbar-thin scrollbar-thumb-gray-800">
           {logs.map((log, i) => (
             <motion.div 
+              id={`log-${i}`}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               key={i} 
@@ -98,7 +104,6 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
               </div>
             </motion.div>
           ))}
-          <div ref={logsEndRef} />
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t border-[#32ff64]/20 flex gap-4">
