@@ -58,7 +58,7 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
       className="w-full min-h-screen lg:h-screen grid grid-cols-1 lg:grid-cols-12 gap-4 p-4 bg-[#0a0a0f] overflow-y-auto lg:overflow-hidden"
     >
       {/* Left Panel: Map */}
-      <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden min-h-[300px] lg:min-h-0">
+      <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden min-h-[300px] lg:min-h-0 order-3 lg:order-none">
         <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
           <span className="text-[#32ff64] flex items-center gap-2"><Map className="w-3 h-3"/> TACTICAL OVERLAY</span>
           <span className="text-gray-500">AEGIS-7</span>
@@ -70,7 +70,7 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
       </div>
 
       {/* Center Panel: Console */}
-      <div className="col-span-1 lg:col-span-6 glass-panel rounded-lg flex flex-col overflow-hidden h-[60vh] lg:h-auto order-last lg:order-none">
+      <div className="col-span-1 lg:col-span-6 glass-panel rounded-lg flex flex-col overflow-hidden h-[60vh] lg:h-auto order-1 lg:order-none">
         <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
           <span className="text-[#32ff64] flex items-center gap-2"><Radio className="w-3 h-3"/> COMMAND FEED</span>
           <span className="text-gray-500">SECURE CHANNEL</span>
@@ -114,7 +114,7 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
       </div>
 
       {/* Right Panel: Status */}
-      <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden">
+      <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden order-2 lg:order-none">
         <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
           <span className="text-[#32ff64] flex items-center gap-2"><Activity className="w-3 h-3"/> SQUADRON STATUS</span>
         </div>
