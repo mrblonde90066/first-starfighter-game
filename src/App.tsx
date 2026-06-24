@@ -1,34 +1,41 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import LandingPage from './components/LandingPage'
+import SetupScreen from './components/SetupScreen'
+import GameHUD from './components/GameHUD'
+
+export type AppState = 'landing' | 'setup' | 'playing'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [appState, setAppState] = useState<AppState>('landing')
+  const [difficulty, setDifficulty] = useState<string>('Veteran')
+  const [playerCount, setPlayerCount] = useState<string>('1P vs AI')
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="min-h-screen w-full bg-[#050505] text-gray-200 relative overflow-hidden font-sans">
+      <div className="scanline" />
+      
+      {appState === 'landing' && (
+        <LandingPage onStart={() => setAppState('setup')} />
+      )}
+      
+      {appState === 'setup' && (
+        <SetupScreen 
+          onLaunch={(diff, players) => {
+            setDifficulty(diff)
+            setPlayerCount(players)
+            setAppState('playing')
+          }} 
+          onBack={() => setAppState('landing')}
+        />
+      )}
+      
+      {appState === 'playing' && (
+        <GameHUD 
+          difficulty={difficulty}
+          playerCount={playerCount}
+        />
+      )}
+    </div>
   )
 }
 

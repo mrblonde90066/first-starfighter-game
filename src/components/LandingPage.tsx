@@ -1,0 +1,58 @@
+import { motion } from 'framer-motion'
+import { Terminal } from 'lucide-react'
+import { darkAmbientAudio } from '../audio/AudioController'
+
+interface LandingPageProps {
+  onStart: () => void
+}
+
+export default function LandingPage({ onStart }: LandingPageProps) {
+  
+  const handleStart = () => {
+    // Start the generative dark ambient audio engine on first user interaction
+    darkAmbientAudio.init();
+    onStart();
+  }
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 1.5 }}
+      className="relative w-full h-screen flex flex-col items-center justify-center"
+      style={{
+        backgroundImage: 'url(/assets/background.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
+      
+      <div className="relative z-10 text-center glass-panel p-12 rounded-2xl max-w-3xl">
+        <motion.div
+          initial={{ y: -50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+        >
+          <Terminal className="w-16 h-16 text-[#32ff64] mx-auto mb-6 opacity-80" />
+          <h1 className="text-6xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500 mb-2 uppercase">
+            First Starfighter
+          </h1>
+          <p className="text-[#32ff64] tracking-[0.3em] uppercase text-sm mb-12 opacity-80">
+            Supreme Command Uplink
+          </p>
+        </motion.div>
+
+        <motion.button
+          onClick={handleStart}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="tech-button px-12 py-4 text-lg rounded-sm"
+        >
+          Initialize Uplink
+        </motion.button>
+      </div>
+    </motion.div>
+  )
+}
