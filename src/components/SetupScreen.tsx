@@ -23,7 +23,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
-      className="w-full h-screen flex items-center justify-center bg-[#050505] p-6 relative"
+      className="w-full min-h-screen flex items-center justify-center bg-[#050505] p-6 py-20 relative overflow-y-auto"
     >
       <button 
         onClick={onBack}
