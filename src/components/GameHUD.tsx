@@ -1,10 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Send, Map, Activity, Radio, Loader2 } from 'lucide-react'
+import type { Scenario } from './SetupScreen'
 
 interface GameHUDProps {
   difficulty: string
   playerCount: string
+  scenario: Scenario
 }
 
 interface LogEntry {
@@ -13,14 +15,14 @@ interface LogEntry {
   timestamp: string
 }
 
-export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
+export default function GameHUD({ difficulty, playerCount, scenario }: GameHUDProps) {
   const [strategy, setStrategy] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationHistory, setConversationHistory] = useState<{ role: string; content: string }[]>([])
   const [logs, setLogs] = useState<LogEntry[]>([
     {
       sender: 'GM',
-      text: "INITIATING UPLINK...\nCONNECTION ESTABLISHED.\n\nWelcome to Aegis-7 Orbital Shipyard. The facility is derelict, but intelligence suggests heavy automated defenses and enemy patrols. Your objective: Infiltrate, locate the Dreadnought construction bay, and sabotage production.\n\nYou have 20 Vanguard drones holding at the perimeter.\n\n[SYSTEM CALIBRATION - HOW TO PLAY]\nFirst Starfighter uses a fluid strategy system. Describe your broad-strokes tactical plan rather than issuing simple commands. Tell me how you want to deploy your units and what Active Modules (listed on the right) you want to utilize.\n\n[HOW OUTCOMES ARE DETERMINED]\nYour strategy is evaluated against the battlefield conditions. Smart tactical choices earn positive modifiers; poor ones earn penalties. A virtual d20 is rolled and your modifier is applied. The result determines how well your plan succeeds — or how badly it fails. Higher difficulty settings reduce your modifiers and increase enemy response.\n\nEXAMPLE: 'I want to send 5 drones using Optical Camo to scout the main corridor. The remaining 15 will hold back and prepare Depth Charges for a breach if the scouts are compromised.'\n\nAwaiting your strategic directives for the infiltration phase. How do we proceed, Commander?",
+      text: `INITIATING UPLINK...\nCONNECTION ESTABLISHED.\n\n[MISSION: ${scenario.title.toUpperCase()}]\nType: ${scenario.type}\n\n${scenario.description}\n\nYou have ${scenario.droneCount} Vanguard drones holding at the perimeter.\n\n[SYSTEM CALIBRATION - HOW TO PLAY]\nFirst Starfighter uses a fluid strategy system. Describe your broad-strokes tactical plan rather than issuing simple commands. Tell me how you want to deploy your units and what Active Modules you want to utilize.\n\n[HOW OUTCOMES ARE DETERMINED]\nYour strategy is evaluated against the battlefield conditions. Smart tactical choices earn positive modifiers; poor ones earn penalties. A virtual d20 is rolled and your modifier is applied. The result determines how well your plan succeeds — or how badly it fails. Higher difficulty settings reduce your modifiers and increase enemy response.\n\nEXAMPLE: 'I want to send 5 drones using ${scenario.modules[0]} to scout the perimeter. The remaining ${scenario.droneCount - 5} will hold back and prepare ${scenario.modules[2]} for a breach if the scouts are compromised.'\n\nAwaiting your strategic directives, Commander.`,
       timestamp: new Date().toLocaleTimeString()
     }
   ])
@@ -32,7 +34,6 @@ export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
 
   useEffect(() => {
     if (logs.length > 1 && logs.length > prevLogsLengthRef.current) {
-      // Wait a tiny bit for the framer-motion animation to mount into the DOM
       setTimeout(() => {
         const newMessage = document.getElementById(`log-${logs.length - 1}`)
         newMessage?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -48,21 +49,18 @@ export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
     const playerMessage = strategy
     setStrategy('')
 
-    // Add player input to log
     setLogs(prev => [...prev, {
       sender: 'Player',
       text: playerMessage,
       timestamp: new Date().toLocaleTimeString()
     }])
 
-    // Build conversation history for the AI
     const updatedHistory = [
       ...conversationHistory,
       { role: 'user', content: playerMessage }
     ]
     setConversationHistory(updatedHistory)
 
-    // Call the AI Game Master
     setIsLoading(true)
     try {
       const response = await fetch('/.netlify/functions/game-master', {
@@ -72,6 +70,7 @@ export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
           strategy: playerMessage,
           difficulty,
           playerCount,
+          scenario,
           conversationHistory: updatedHistory,
         }),
       })
@@ -115,7 +114,7 @@ export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
       <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden min-h-[300px] lg:min-h-0 order-3 lg:order-none">
         <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
           <span className="text-[#32ff64] flex items-center gap-2"><Map className="w-3 h-3"/> TACTICAL OVERLAY</span>
-          <span className="text-gray-500">AEGIS-7</span>
+          <span className="text-gray-500">{scenario.title.toUpperCase()}</span>
         </div>
         <div className="flex-1 bg-black/40 p-2 relative">
           <img src="/assets/map.png" alt="Tactical Map" className="w-full h-full object-cover rounded opacity-80 border border-[#32ff64]/10" />
@@ -197,7 +196,7 @@ export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
           <div>
             <div className="text-xs text-gray-500 mb-2 uppercase tracking-wider">Combat Readiness</div>
             <div className="flex items-end justify-between border-b border-gray-800 pb-2">
-              <span className="text-4xl font-black text-white">20<span className="text-lg text-gray-600">/20</span></span>
+              <span className="text-4xl font-black text-white">{scenario.droneCount}<span className="text-lg text-gray-600">/{scenario.droneCount}</span></span>
               <span className="text-[#32ff64] text-xs mb-1 uppercase">Optimal</span>
             </div>
           </div>
@@ -212,10 +211,11 @@ export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
           <div>
             <div className="text-xs text-gray-500 mb-3 uppercase tracking-wider">Active Modules</div>
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="p-2 border border-gray-800 bg-black/40 text-gray-400 text-center rounded">OPTICAL CAMO</div>
-              <div className="p-2 border border-gray-800 bg-black/40 text-gray-400 text-center rounded">ICE BREAKERS</div>
-              <div className="p-2 border border-gray-800 bg-black/40 text-gray-400 text-center rounded">DEPTH CHARGES</div>
-              <div className="p-2 border border-gray-800 bg-black/40 text-gray-400 text-center rounded">THRUSTERS</div>
+              {scenario.modules.map((mod, i) => (
+                <div key={i} className="p-2 border border-gray-800 bg-black/40 text-gray-400 text-center rounded">
+                  {mod}
+                </div>
+              ))}
             </div>
           </div>
 

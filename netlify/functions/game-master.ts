@@ -1,9 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 
-const SYSTEM_PROMPT = `You are the AI Game Master for "First Starfighter," a dark, atmospheric military strategy game inspired by Robotech and HR Giger aesthetics. You control the battlefield narrative for an infiltration mission at the Aegis-7 Orbital Shipyard.
+interface ScenarioData {
+  title: string;
+  type: string;
+  description: string;
+  droneCount: number;
+  modules: string[];
+}
+
+function buildSystemPrompt(scenario: ScenarioData, difficulty: string): string {
+  return `You are the AI Game Master for "First Starfighter," a dark, atmospheric military strategy game inspired by Robotech and HR Giger aesthetics.
 
 CORE RULES:
-1. The player commands 20 Vanguard aerial drones with Active Modules: OPTICAL CAMO, ICE BREAKERS, DEPTH CHARGES, and THRUSTERS.
+1. The player commands ${scenario.droneCount} Vanguard aerial drones with Active Modules: ${scenario.modules.join(", ")}.
 2. The player describes their strategy in broad strokes. You evaluate it, simulate the outcome, and narrate cinematically.
 3. You must use the Virtual Dice Roll + Modifier system for EVERY tactical outcome:
    - Evaluate the player's tactic against the situation. Assign a modifier between -5 and +5.
@@ -17,7 +26,7 @@ CORE RULES:
      * 20+ (Critical Success): Exceeds expectations. Bonus intel or advantage gained.
    - ALWAYS display the roll, modifier, and result clearly in your response like: "[ROLL: 14 | MODIFIER: +2 | RESULT: 16 — Clean Success]"
 
-DIFFICULTY SCALING:
+DIFFICULTY SCALING (current: ${difficulty}):
 - Recruit: Player gets +2 bonus to all rolls. Enemy is slow to react.
 - Veteran: No bonus. Standard enemy response.
 - Commander: Player gets -2 penalty. Enemy adapts quickly and has reinforcements.
@@ -25,15 +34,13 @@ DIFFICULTY SCALING:
 
 NARRATIVE STYLE:
 - Write in a dark, cinematic tone. Short, punchy sentences during action. Vivid sensory detail.
-- Reference the zero-gravity environment, toxic gas clouds, and derelict shipyard atmosphere.
 - End every response with a clear TACTICAL PAUSE asking the player what they want to do next.
-- Track drone casualties. If drones are lost, state the new count (e.g., "Squadron: 18/20 — 2 units destroyed").
+- Track drone casualties. If drones are lost, state the new count (e.g., "Squadron: 18/${scenario.droneCount} — 2 units destroyed").
 - NEVER let the player succeed without cost on Commander or Starfighter difficulty.
 
-SCENARIO CONTEXT:
-The player is infiltrating a massive derelict orbital shipyard (Aegis-7) suspended in the upper atmosphere of gas giant Xylos. Enemy forces are building a Dreadnought-class super weapon inside. The player must infiltrate, gather intel, and sabotage the Dreadnought's construction.
-
-The current difficulty setting is provided with each message. Adjust your evaluation accordingly.`;
+SCENARIO: ${scenario.title} (${scenario.type})
+${scenario.description}`;
+}
 
 export default async (req: Request) => {
   if (req.method !== "POST") {
@@ -52,15 +59,16 @@ export default async (req: Request) => {
   }
 
   try {
-    const { strategy, difficulty, conversationHistory } = await req.json();
+    const { strategy, difficulty, scenario, conversationHistory } = await req.json();
 
     const ai = new GoogleGenAI({ apiKey });
+    const systemPrompt = buildSystemPrompt(scenario, difficulty);
 
     // Build the message history for the model
     const contents = [
       {
         role: "user" as const,
-        parts: [{ text: SYSTEM_PROMPT + "\\n\\nThe current difficulty is: " + difficulty }],
+        parts: [{ text: systemPrompt }],
       },
       {
         role: "model" as const,
