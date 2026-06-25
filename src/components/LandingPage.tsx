@@ -23,13 +23,12 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       className="relative w-full h-screen flex flex-col items-center justify-center"
       style={{
         backgroundImage: 'url(/assets/background.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'top center',
+        backgroundSize: '120%',
+        backgroundPosition: 'center 15%',
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none" />
-      
-      <div className="relative z-10 text-center glass-panel p-6 md:p-12 rounded-2xl w-[90%] max-w-3xl mt-32">
+      <div className="relative z-10 text-center glass-panel p-6 md:p-12 rounded-2xl w-[90%] max-w-3xl mt-48">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
