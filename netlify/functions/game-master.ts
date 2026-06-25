@@ -13,8 +13,8 @@ function buildSystemPrompt(scenario: ScenarioData, difficulty: string, playstyle
 
   const fairyTheme = `You are the AI Game Master for a violent, tactical war game set in the "Rainbow Sparkles Galaxy".
 The player commands a Fairy Army instead of drones. 
-Enemies are magical creatures like Unicorns, Princesses, and Care Bears.
-The violence MUST be described with extreme tactical seriousness and gritty realism, but substituting oil/shrapnel with glitter, rainbows, sparkles, and magic.`;
+Enemies are magical creatures like Unicorns, Princesses, Care Bears, and enchanted plushies.
+CRITICAL TONE REQUIREMENT: You MUST maintain the extremely serious, gritty, life-and-death tactical military tone of a grimdark war story, but applied to utterly ridiculous characters, locations, and situations. Treat a gummy bear ambush with the same gravity and trauma as a Normandy beach landing. Describe the violence and tactical maneuvers with severe seriousness, but substitute real-world gore and shrapnel with glitter, rainbows, sparkles, frosting, and magic.`;
 
   const cyberTheme = `You are the AI Game Master for "First Starfighter," a dark, atmospheric military strategy game inspired by Robotech and HR Giger aesthetics.`;
 
