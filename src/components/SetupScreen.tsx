@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ShieldAlert, Users, ChevronRight, ArrowLeft, Crosshair, Loader2, RefreshCw } from 'lucide-react'
 import { DEFAULTS } from '../constants'
+import allScenarios from '../data/scenarios.json'
 
 export interface Scenario {
   title: string
@@ -16,12 +17,17 @@ interface SetupScreenProps {
   onBack: () => void
 }
 
+function pickRandom(pool: Scenario[], count: number): Scenario[] {
+  const shuffled = [...pool].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, count)
+}
+
 export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
   const [difficulty, setDifficulty] = useState(DEFAULTS.difficulty)
   const [playerCount, setPlayerCount] = useState(DEFAULTS.playerCount)
-  const [scenarios, setScenarios] = useState<Scenario[]>([])
+  const [scenarios, setScenarios] = useState<Scenario[]>(() => pickRandom(allScenarios, 3))
   const [selectedScenario, setSelectedScenario] = useState<number | null>(null)
-  const [loadingScenarios, setLoadingScenarios] = useState(true)
+  const [loadingScenarios, setLoadingScenarios] = useState(false)
   const [scenarioError, setScenarioError] = useState(false)
   const [hasRegenerated, setHasRegenerated] = useState(false)
 
@@ -37,8 +43,8 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
     { name: '1v1 Local', enabled: false },
   ]
 
-  const fetchScenarios = async (isRegen = false) => {
-    if (isRegen && hasRegenerated) return
+  const regenerateScenarios = async () => {
+    if (hasRegenerated) return
     setLoadingScenarios(true)
     setScenarioError(false)
     setSelectedScenario(null)
@@ -51,18 +57,16 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setScenarios(data.scenarios || [])
-      if (isRegen) setHasRegenerated(true)
+      setHasRegenerated(true)
     } catch {
       setScenarioError(true)
-      setScenarios([])
     } finally {
       setLoadingScenarios(false)
     }
   }
 
-  useEffect(() => {
-    fetchScenarios()
-  }, [])
+  // Suppress the unused variable warning — kept for potential future use
+  useEffect(() => { void 0 }, [])
 
   return (
     <motion.div 
@@ -140,7 +144,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
               <Crosshair className="w-4 h-4" /> Select Mission
             </h2>
             <button
-              onClick={() => fetchScenarios(true)}
+              onClick={regenerateScenarios}
               disabled={loadingScenarios || hasRegenerated}
               className="text-gray-500 hover:text-[#32ff64] transition-colors flex items-center gap-2 text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
             >
@@ -159,7 +163,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
           {scenarioError && (
             <div className="text-center py-16">
               <p className="text-red-400 font-mono text-sm mb-4">Failed to generate scenarios. Check API key configuration.</p>
-              <button onClick={fetchScenarios} className="tech-button px-6 py-2 text-sm">Retry</button>
+              <button onClick={regenerateScenarios} className="tech-button px-6 py-2 text-sm">Retry</button>
             </div>
           )}
 

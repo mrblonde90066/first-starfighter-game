@@ -1,0 +1,72 @@
+[
+  {
+    "title": "The Bone Graveyard",
+    "type": "Search & Rescue",
+    "description": "A massive debris field of destroyed warships orbits a dead moon. Your long-range sensors detected a faint distress beacon from a downed allied command cruiser buried deep within the wreckage. Enemy salvage teams are already picking through the bones. Extract the crew before they're captured — or silenced.",
+    "droneCount": 18,
+    "modules": ["OPTICAL CAMO", "GRAPPLE ARMS", "SHIELD MATRIX", "THRUSTERS"]
+  },
+  {
+    "title": "Canyon of Whispers",
+    "type": "Offensive Assault",
+    "description": "A rogue splinter faction has fortified a massive, winding canyon on a desert planet. Severe electromagnetic storms scramble long-range sensors and blind your drones at random intervals. Push through the canyon and destroy their shield generators before reinforcements arrive.",
+    "droneCount": 25,
+    "modules": ["PLASMA LANCES", "DEPTH CHARGES", "SHIELD MATRIX", "THRUSTERS"]
+  },
+  {
+    "title": "The Glass Citadel",
+    "type": "Espionage & Sabotage",
+    "description": "An enemy research station built inside a crystalline asteroid is developing a new weapon capable of disrupting drone neural links. The station's walls are transparent — every corridor is visible from the outside, making stealth nearly impossible. Find another way in, steal the research data, and destroy the prototype.",
+    "droneCount": 15,
+    "modules": ["ICE BREAKERS", "OPTICAL CAMO", "EMP CHARGES", "SENSOR GHOSTS"]
+  },
+  {
+    "title": "Iron Tide Rising",
+    "type": "Defensive Hold",
+    "description": "Your forward operating base on a volcanic moon is about to be overrun. Seismic activity is destabilizing the terrain, opening fissures of molten rock across your defensive perimeter. Hold the base until evacuation transports arrive in 8 hours while the ground literally melts beneath you.",
+    "droneCount": 30,
+    "modules": ["SHIELD MATRIX", "PLASMA LANCES", "DEPTH CHARGES", "THERMAL SHIELDING"]
+  },
+  {
+    "title": "The Midnight Convoy",
+    "type": "Ambush",
+    "description": "Enemy intelligence is transporting a high-value prisoner through a dense asteroid belt under heavy escort. You have one chance to intercept the convoy, disable the prisoner transport, and extract the captive before the escort fleet tears your squadron apart.",
+    "droneCount": 20,
+    "modules": ["THRUSTERS", "EMP CHARGES", "GRAPPLE ARMS", "OPTICAL CAMO"]
+  },
+  {
+    "title": "Abyssal Station",
+    "type": "Espionage & Sabotage",
+    "description": "A covert enemy listening post is hidden in the crushing depths of a gas giant's lower atmosphere. The pressure at this depth will slowly destroy your drones' hulls. Dive deep, plant surveillance taps on their communications array, and ascend before your squad is crushed.",
+    "droneCount": 16,
+    "modules": ["PRESSURE HULLS", "ICE BREAKERS", "OPTICAL CAMO", "THRUSTERS"]
+  },
+  {
+    "title": "The Siege of Karros",
+    "type": "Offensive Assault",
+    "description": "A fortified orbital platform above the colony world of Karros has been commandeered by enemy forces who are holding the civilian population hostage. Breach the station's multi-layered defenses without triggering the dead-man switch wired to the station's reactor.",
+    "droneCount": 22,
+    "modules": ["PLASMA LANCES", "ICE BREAKERS", "SENSOR GHOSTS", "SHIELD MATRIX"]
+  },
+  {
+    "title": "Frozen Requiem",
+    "type": "Extraction",
+    "description": "A black-ops science team went dark on an ice world three days ago. Their last transmission mentioned something moving beneath the glaciers. Land on the frozen surface, locate the science team's bunker, and extract any survivors. Expect hostiles of unknown origin.",
+    "droneCount": 20,
+    "modules": ["THERMAL SHIELDING", "OPTICAL CAMO", "DEPTH CHARGES", "GRAPPLE ARMS"]
+  },
+  {
+    "title": "Shattered Crown",
+    "type": "Ambush",
+    "description": "An enemy admiral's flagship is docked at a partially destroyed space station for emergency repairs. The station's weapon systems are offline, but the flagship's point-defense grid is fully operational. Strike now while they're vulnerable — destroy the flagship and cripple enemy command structure.",
+    "droneCount": 24,
+    "modules": ["PLASMA LANCES", "EMP CHARGES", "THRUSTERS", "DEPTH CHARGES"]
+  },
+  {
+    "title": "The Drift",
+    "type": "Search & Rescue",
+    "description": "A derelict mega-freighter has been drifting through contested space for decades. Scans show faint life signs deep within the hull — impossible, given the ship's age. High Command wants answers. Board the vessel, locate the source of the life signs, and report back. Something is very wrong aboard this ship.",
+    "droneCount": 17,
+    "modules": ["OPTICAL CAMO", "SENSOR GHOSTS", "ICE BREAKERS", "SHIELD MATRIX"]
+  }
+]
