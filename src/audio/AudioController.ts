@@ -119,7 +119,10 @@ export class AudioController {
     ];
 
     const playRiff = () => {
-      if (!this.ctx || !this.masterGain || !this.isPlaying) return;
+      if (!this.ctx || !this.masterGain) return;
+      // Allow the first iteration to run even if isPlaying hasn't been flipped yet
+      // but stop subsequent iterations if it's been stopped
+      if (this.loopTimer !== null && !this.isPlaying) return;
 
       let time = this.ctx.currentTime;
 
