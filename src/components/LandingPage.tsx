@@ -29,20 +29,19 @@ export default function LandingPage({ onStart }: LandingPageProps) {
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none" />
       
-      {/* Secret Easter Egg Trigger: Robot Face Area */}
-      <div 
-        onClick={() => handleStart(true)}
-        className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[25%] z-20 cursor-default"
-        title=""
-      />
-      
-      <div className="relative z-10 text-center glass-panel p-6 md:p-12 rounded-2xl w-[90%] max-w-3xl">
+      <div className="relative z-10 text-center glass-panel p-6 md:p-12 rounded-2xl w-[90%] max-w-3xl mt-32">
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 1 }}
         >
-          <Terminal className="w-12 h-12 md:w-16 md:h-16 text-[#32ff64] mx-auto mb-4 md:mb-6 opacity-80" />
+          <button 
+            onClick={() => handleStart(true)}
+            className="focus:outline-none hover:scale-110 transition-transform duration-300"
+            title="Classified"
+          >
+            <Terminal className="w-12 h-12 md:w-16 md:h-16 text-[#32ff64] mx-auto mb-4 md:mb-6 opacity-80 cursor-pointer" />
+          </button>
           <h1 className="text-4xl md:text-6xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-500 mb-2 uppercase">
             First Starfighter
           </h1>
