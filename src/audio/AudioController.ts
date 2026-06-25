@@ -6,7 +6,7 @@ export class AudioController {
   private loopTimer: number | null = null;
   public isSeinfeldMode = false;
 
-  public init() {
+  public init(forceSeinfeld = false) {
     if (this.isPlaying) return;
     
     try {
@@ -23,8 +23,8 @@ export class AudioController {
         this.ctx.resume();
       }
 
-      // 10% chance of the Seinfeld easter egg
-      if (Math.random() < 0.1) {
+      // 10% chance of the Seinfeld easter egg, or 100% if forced
+      if (forceSeinfeld || Math.random() < 0.1) {
         this.isSeinfeldMode = true;
         this.initSeinfeld();
       } else {

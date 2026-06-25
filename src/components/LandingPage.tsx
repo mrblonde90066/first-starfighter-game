@@ -8,9 +8,9 @@ interface LandingPageProps {
 
 export default function LandingPage({ onStart }: LandingPageProps) {
   
-  const handleStart = () => {
+  const handleStart = (forceSeinfeld = false) => {
     // Start the generative dark ambient audio engine on first user interaction
-    darkAmbientAudio.init();
+    darkAmbientAudio.init(forceSeinfeld);
     onStart();
   }
 
@@ -27,7 +27,14 @@ export default function LandingPage({ onStart }: LandingPageProps) {
         backgroundPosition: 'center',
       }}
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none" />
+      
+      {/* Secret Easter Egg Trigger: Robot Face Area */}
+      <div 
+        onClick={() => handleStart(true)}
+        className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[30%] h-[30%] z-20 cursor-default"
+        title=""
+      />
       
       <div className="relative z-10 text-center glass-panel p-6 md:p-12 rounded-2xl w-[90%] max-w-3xl">
         <motion.div
@@ -45,7 +52,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
         </motion.div>
 
         <motion.button
-          onClick={handleStart}
+          onClick={() => handleStart()}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="tech-button px-12 py-4 text-lg rounded-sm"
