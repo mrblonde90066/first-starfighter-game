@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Send, Map, Activity, Radio, Loader2 } from 'lucide-react'
 import type { Scenario } from './SetupScreen'
 import { darkAmbientAudio } from '../audio/AudioController'
+import { MODULE_DESCRIPTIONS } from '../data/modules'
 
 interface GameHUDProps {
   difficulty: string
@@ -25,11 +26,12 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
   const [strategy, setStrategy] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [missionResult, setMissionResult] = useState<'ongoing' | 'victory' | 'defeat'>('ongoing')
+  const [isBriefing, setIsBriefing] = useState(true)
   const [conversationHistory, setConversationHistory] = useState<{ role: string; content: string }[]>([])
   const [logs, setLogs] = useState<LogEntry[]>([
     {
       sender: 'GM',
-      text: `INITIATING UPLINK...\nCONNECTION ESTABLISHED.\n\n[MISSION: ${scenario.title.toUpperCase()}]\nType: ${scenario.type}\n\n${scenario.description}\n\nYou have ${scenario.droneCount} ${isFairyMode ? 'Combat Sprites' : 'Vanguard drones'} holding at the perimeter.\n\n[SYSTEM CALIBRATION - HOW TO PLAY]\nFirst Starfighter uses a fluid strategy system. Describe your broad-strokes tactical plan rather than issuing simple commands. Tell me how you want to deploy your units and what Active Modules you want to utilize.\n\n[HOW OUTCOMES ARE DETERMINED]\nYour strategy is evaluated against the battlefield conditions. Smart tactical choices earn positive modifiers; poor ones earn penalties. A virtual d20 is rolled and your modifier is applied. The result determines how well your plan succeeds — or how badly it fails. Higher difficulty settings reduce your modifiers and increase enemy response.\n\nEXAMPLE: 'I want to send 5 ${isFairyMode ? 'sprites' : 'drones'} using ${scenario.modules[0]} to scout the perimeter. The remaining ${scenario.droneCount - 5} will hold back and prepare ${scenario.modules[2]} for a breach if the scouts are compromised.'\n\nAwaiting your strategic directives, Commander.`,
+      text: `INITIATING UPLINK...\nCONNECTION ESTABLISHED.\n\n[MISSION: ${scenario.title.toUpperCase()}]\nType: ${scenario.type}\n\n${scenario.description}\n\nYou have ${scenario.droneCount} ${isFairyMode ? 'Combat Sprites' : 'Vanguard drones'} holding at the perimeter.\n\n[SYSTEM CALIBRATION - HOW TO PLAY]\nFirst Starfighter uses a fluid strategy system. Describe your broad-strokes tactical plan rather than issuing simple commands. Tell me how you want to deploy your units and what Active Modules you want to utilize.\n\n[HOW OUTCOMES ARE DETERMINED]\nYour strategy is evaluated against the battlefield conditions based on two factors:\n1. The tactical soundness of your plan: how effectively your chosen modules and maneuvers achieve the mission objectives.\n2. No plan survives first contact: an element of luck and chaos will always vary the final outcome.\n\nHigher difficulty settings reduce your tactical effectiveness and increase enemy response.\n\nEXAMPLE: 'I want to send 5 ${isFairyMode ? 'sprites' : 'drones'} using ${scenario.modules[0]} to scout the perimeter. The remaining ${scenario.droneCount - 5} will hold back and prepare ${scenario.modules[2]} for a breach if the scouts are compromised.'\n\nReview your loadout. When ready, deploy your ${isFairyMode ? 'sprites' : 'squadron'} to begin.`,
       timestamp: new Date().toLocaleTimeString()
     }
   ])
@@ -57,11 +59,12 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
     }
   }, [missionResult])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!strategy.trim() || isLoading) return
+  const handleSubmit = async (e?: React.FormEvent, deployOverride?: string) => {
+    if (e) e.preventDefault()
+    
+    const playerMessage = deployOverride || strategy
+    if (!playerMessage.trim() || isLoading) return
 
-    const playerMessage = strategy
     setStrategy('')
 
     setLogs(prev => [...prev, {
@@ -193,23 +196,39 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t flex gap-4" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
-          <input 
-            type="text"
-            value={strategy}
-            onChange={(e) => setStrategy(e.target.value)}
-            placeholder={missionResult !== 'ongoing' ? "Mission concluded." : (isFairyMode ? "Command your fairy squadron..." : "Enter fluid strategic directives...")}
-            disabled={isLoading || missionResult !== 'ongoing'}
-            className="flex-1 bg-black/50 border border-gray-700 rounded px-4 py-3 text-white font-mono text-sm focus:outline-none transition-colors disabled:opacity-50"
-          />
-          <button 
-            type="submit" 
-            disabled={isLoading || missionResult !== 'ongoing'}
-            className="tech-button px-6 rounded flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Send className="w-5 h-5" />
-          </button>
-        </form>
+        {isBriefing ? (
+          <div className="p-4 bg-black/80 border-t flex justify-center" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
+            <button
+              onClick={() => {
+                setIsBriefing(false)
+                handleSubmit(undefined, '[DEPLOY]')
+              }}
+              disabled={isLoading}
+              className="tech-button px-8 py-3 w-full max-w-md rounded flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ borderColor: accent, color: accent }}
+            >
+              Deploy {isFairyMode ? 'Sprites' : 'Squadron'} <Send className="w-4 h-4" />
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t flex gap-4" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
+            <input 
+              type="text"
+              value={strategy}
+              onChange={(e) => setStrategy(e.target.value)}
+              placeholder={missionResult !== 'ongoing' ? "Mission concluded." : (isFairyMode ? "Command your fairy squadron..." : "Enter fluid strategic directives...")}
+              disabled={isLoading || missionResult !== 'ongoing'}
+              className="flex-1 bg-black/50 border border-gray-700 rounded px-4 py-3 text-white font-mono text-sm focus:outline-none transition-colors disabled:opacity-50"
+            />
+            <button 
+              type="submit" 
+              disabled={isLoading || missionResult !== 'ongoing'}
+              className="tech-button px-6 rounded flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Send className="w-5 h-5" />
+            </button>
+          </form>
+        )}
       </div>
 
       {/* Right Panel: Status */}
@@ -245,10 +264,11 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
 
           <div>
             <div className="text-xs text-gray-500 mb-3 uppercase tracking-wider">Active Modules</div>
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="space-y-2 text-xs">
               {scenario.modules.map((mod, i) => (
-                <div key={i} className="p-2 border border-gray-800 bg-black/40 text-gray-400 text-center rounded">
-                  {mod}
+                <div key={i} className="p-2 border border-gray-800 bg-black/40 text-gray-400 rounded text-left">
+                  <span className="font-bold text-white block mb-1" style={{ color: accent }}>{mod}</span>
+                  <span className="opacity-80 leading-relaxed">{MODULE_DESCRIPTIONS[mod] || 'Experimental technology. Effects unknown.'}</span>
                 </div>
               ))}
             </div>

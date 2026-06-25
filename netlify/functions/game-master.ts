@@ -98,9 +98,13 @@ export default async (req: Request) => {
     // Append conversation history
     if (conversationHistory && conversationHistory.length > 0) {
       for (const msg of conversationHistory) {
+        let msgText = msg.content;
+        if (msgText === '[DEPLOY]') {
+          msgText = "COMMAND: Deploy units to the AO. Provide a cinematic 'Scene Setting' paragraph describing the immediate tactical situation on the ground right now. End with a prompt for my first set of strategic orders. DO NOT evaluate any strategy yet, just drop me into the scene.";
+        }
         contents.push({
           role: msg.role === "user" ? "user" as const : "model" as const,
-          parts: [{ text: msg.content }],
+          parts: [{ text: msgText }],
         });
       }
     }
@@ -110,9 +114,13 @@ export default async (req: Request) => {
       !conversationHistory?.length ||
       conversationHistory[conversationHistory.length - 1]?.content !== strategy
     ) {
+      let msgText = strategy;
+      if (msgText === '[DEPLOY]') {
+        msgText = "COMMAND: Deploy units to the AO. Provide a cinematic 'Scene Setting' paragraph describing the immediate tactical situation on the ground right now. End with a prompt for my first set of strategic orders. DO NOT evaluate any strategy yet, just drop me into the scene.";
+      }
       contents.push({
         role: "user" as const,
-        parts: [{ text: strategy }],
+        parts: [{ text: msgText }],
       });
     }
 
