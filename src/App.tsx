@@ -35,6 +35,7 @@ function App() {
         {appState === 'setup' && (
           <SetupScreen 
             key="setup"
+            isFairyMode={isFairyMode}
             onLaunch={(diff, players, sc, style) => {
               setDifficulty(diff)
               setPlayerCount(players)

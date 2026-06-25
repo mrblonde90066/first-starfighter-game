@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ShieldAlert, Users, ChevronRight, ArrowLeft, Crosshair, Loader2, RefreshCw, Radio } from 'lucide-react'
 import { DEFAULTS } from '../constants'
 import allScenarios from '../data/scenarios.json'
+import fairyScenarios from '../data/fairy-scenarios.json'
 
 export interface Scenario {
   title: string
@@ -15,6 +16,7 @@ export interface Scenario {
 interface SetupScreenProps {
   onLaunch: (difficulty: string, players: string, scenario: Scenario, playstyle: string) => void
   onBack: () => void
+  isFairyMode: boolean
 }
 
 function pickRandom(pool: Scenario[], count: number): Scenario[] {
@@ -22,11 +24,12 @@ function pickRandom(pool: Scenario[], count: number): Scenario[] {
   return shuffled.slice(0, count)
 }
 
-export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
+export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScreenProps) {
+  const scenarioPool = isFairyMode ? fairyScenarios : allScenarios
   const [difficulty, setDifficulty] = useState(DEFAULTS.difficulty)
   const [playerCount, setPlayerCount] = useState(DEFAULTS.playerCount)
   const [playstyle, setPlaystyle] = useState(DEFAULTS.playstyle)
-  const [scenarios, setScenarios] = useState<Scenario[]>(() => pickRandom(allScenarios, 3))
+  const [scenarios, setScenarios] = useState<Scenario[]>(() => pickRandom(scenarioPool, 3))
   const [selectedScenario, setSelectedScenario] = useState<number | null>(null)
   const [loadingScenarios, setLoadingScenarios] = useState(false)
   const [scenarioError, setScenarioError] = useState(false)
@@ -217,7 +220,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
                   <div className="border-t border-gray-800 pt-3 mt-auto">
                     <div className="flex justify-between text-xs mb-2">
                       <span className="text-gray-500">Forces:</span>
-                      <span className="text-white">{scenario.droneCount}x Drones</span>
+                      <span className="text-white">{scenario.droneCount}x {isFairyMode ? 'Fairies' : 'Drones'}</span>
                     </div>
                     <div className="flex flex-wrap gap-1">
                       {scenario.modules.map((mod, j) => (
@@ -246,7 +249,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
             whileTap={selectedScenario !== null ? { scale: 0.98 } : {}}
             className="tech-button w-full max-w-md py-4 flex items-center justify-center gap-2 disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            Launch Vanguard <ChevronRight className="w-5 h-5" />
+             Launch {isFairyMode ? 'Fairy Squadron' : 'Vanguard'} <ChevronRight className="w-5 h-5" />
           </motion.button>
         </div>
       </div>

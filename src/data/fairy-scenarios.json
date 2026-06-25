@@ -1,0 +1,72 @@
+[
+  {
+    "title": "The Glitter Siege",
+    "type": "Offensive Assault",
+    "description": "Princess Celestara has fortified the Candy Fortress at the heart of the Sugarplum Nebula with enchanted gummy bear sentries and a devastating rainbow cannon. Your fairy battalion must breach the frosted walls, neutralize her honor guard of armored unicorns, and topple her throne before reinforcements arrive from the Marshmallow Highlands.",
+    "droneCount": 24,
+    "modules": ["PIXIE DUST BOMBS", "SPARKLE LANCES", "RAINBOW SHIELDS", "FLUTTER THRUSTERS"]
+  },
+  {
+    "title": "Twilight Meadow Massacre",
+    "type": "Ambush",
+    "description": "A convoy of elite Unicorn Paladins is transporting the Crown of Eternal Shimmer through the Twilight Meadows. Intelligence suggests their formation is weakened after a skirmish with rogue gnomes. Intercept the convoy, eliminate the Paladin escort, and seize the Crown before they reach the safety of the Crystal Citadel.",
+    "droneCount": 20,
+    "modules": ["FLUTTER THRUSTERS", "ENCHANTED NETS", "SPARKLE LANCES", "INVISIBILITY POLLEN"]
+  },
+  {
+    "title": "The Cupcake Bunker",
+    "type": "Espionage & Sabotage",
+    "description": "Deep beneath Mount Frosting, the Care Bear Alliance is developing a weapon that radiates aggressive positivity — exposure causes fairies to lay down arms and hug the nearest enemy. Infiltrate the bunker, steal the schematics, and demolish the prototype Kindness Cannon before it's deployed across the galaxy.",
+    "droneCount": 15,
+    "modules": ["INVISIBILITY POLLEN", "PIXIE DUST BOMBS", "ENCHANTED NETS", "MOOD DAMPENERS"]
+  },
+  {
+    "title": "Stardust Graveyard",
+    "type": "Search & Rescue",
+    "description": "A massive field of shattered rainbow bridges and destroyed cloud castles drifts through the void. Your scouts detected a faint distress signal from Commander Thistle's missing fairy platoon somewhere in the debris. Enemy butterfly drones patrol the wreckage. Extract the survivors before the Unicorn Inquisition finds them first.",
+    "droneCount": 18,
+    "modules": ["INVISIBILITY POLLEN", "ENCHANTED NETS", "RAINBOW SHIELDS", "FLUTTER THRUSTERS"]
+  },
+  {
+    "title": "The Lollipop Blockade",
+    "type": "Defensive Hold",
+    "description": "Your forward operating base on Jellybean Island is surrounded. A massive army of Princess Bubblegum's enchanted teddy bear infantry is closing in from all sides while her flying unicorn cavalry prepares to dive-bomb your position. Hold the base until the Fairy Queen's evacuation fleet arrives in 6 hours.",
+    "droneCount": 30,
+    "modules": ["RAINBOW SHIELDS", "SPARKLE LANCES", "PIXIE DUST BOMBS", "PETAL BARRICADES"]
+  },
+  {
+    "title": "Moonbeam Canyon",
+    "type": "Offensive Assault",
+    "description": "The Unicorn Warlord Stardancer has entrenched her elite horn-lancers in a winding canyon made of crystallized moonlight. Periodic bursts of shooting stars blind your sensors at random intervals. Push through the canyon and destroy their Wish Generators before the next wave of enchanted reinforcements materializes.",
+    "droneCount": 25,
+    "modules": ["SPARKLE LANCES", "PIXIE DUST BOMBS", "RAINBOW SHIELDS", "FLUTTER THRUSTERS"]
+  },
+  {
+    "title": "Operation Cotton Cloud",
+    "type": "Extraction",
+    "description": "A black-ops fairy recon team went silent three days ago inside the Cotton Cloud Kingdom. Their last transmission mentioned something enormous stirring inside the clouds — something with a horn and very bad intentions. Fly in, locate the team, and extract any survivors. Expect heavy magical resistance.",
+    "droneCount": 20,
+    "modules": ["FLUTTER THRUSTERS", "INVISIBILITY POLLEN", "ENCHANTED NETS", "MOOD DAMPENERS"]
+  },
+  {
+    "title": "The Sprinkle Depths",
+    "type": "Espionage & Sabotage",
+    "description": "A covert Unicorn listening post is hidden deep inside a swirling vortex of rainbow sprinkles at the core of the Candy Nebula. The deeper you fly, the more the sugar crystals corrode your fairy wings. Plant surveillance taps on their communication array and escape before your entire squadron dissolves.",
+    "droneCount": 16,
+    "modules": ["SUGAR-PROOF COATING", "INVISIBILITY POLLEN", "FLUTTER THRUSTERS", "ENCHANTED NETS"]
+  },
+  {
+    "title": "Shattered Tiara",
+    "type": "Ambush",
+    "description": "The Supreme Princess's royal sky-yacht is docked at a half-destroyed cloud palace for emergency repairs after a glitter storm. Her personal guard of diamond-armored unicorns is still fully operational, but the palace's enchanted turrets are offline. Strike now — destroy the yacht and cripple the Princess Alliance's chain of command.",
+    "droneCount": 22,
+    "modules": ["SPARKLE LANCES", "PIXIE DUST BOMBS", "FLUTTER THRUSTERS", "ENCHANTED NETS"]
+  },
+  {
+    "title": "The Plushie Nexus",
+    "type": "Search & Rescue",
+    "description": "A derelict mega-castle has been drifting through the Rainbow Sparkles Galaxy for centuries. Scans show faint life signs deep inside — impossible, given the castle's age and the fact it's been overrun by feral stuffed animals. High Command wants answers. Breach the castle, locate the source of the signals, and report back. Something very wrong is living inside those walls.",
+    "droneCount": 17,
+    "modules": ["INVISIBILITY POLLEN", "MOOD DAMPENERS", "ENCHANTED NETS", "RAINBOW SHIELDS"]
+  }
+]
