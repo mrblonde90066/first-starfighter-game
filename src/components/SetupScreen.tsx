@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShieldAlert, Users, ChevronRight, ArrowLeft } from 'lucide-react'
+import { DEFAULTS } from '../constants'
 
 interface SetupScreenProps {
   onLaunch: (difficulty: string, players: string) => void
@@ -8,14 +9,19 @@ interface SetupScreenProps {
 }
 
 export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
-  const [difficulty, setDifficulty] = useState('Veteran')
-  const [playerCount, setPlayerCount] = useState('1P vs AI')
+  const [difficulty, setDifficulty] = useState(DEFAULTS.difficulty)
+  const [playerCount, setPlayerCount] = useState(DEFAULTS.playerCount)
 
   const difficulties = [
     { name: 'Recruit', desc: 'High margin for error. Zero casualties likely.' },
     { name: 'Veteran', desc: 'Moderate risk. Standard strategic evaluation.' },
     { name: 'Commander', desc: 'High risk. Even perfect strategies incur cost.' },
     { name: 'Starfighter', desc: 'Nightmare. Survival is not guaranteed.' }
+  ]
+
+  const modes = [
+    { name: '1P vs AI', enabled: true },
+    { name: '1v1 Local', enabled: false },
   ]
 
   return (
@@ -62,17 +68,23 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
             <Users className="w-4 h-4" /> Combatants
           </h2>
           <div className="grid grid-cols-2 gap-4 mb-auto">
-            {['1P vs AI', '1v1 Local'].map(mode => (
+            {modes.map(mode => (
               <button
-                key={mode}
-                onClick={() => setPlayerCount(mode)}
-                className={`p-4 border text-center font-bold uppercase text-sm transition-all ${
-                  playerCount === mode 
-                    ? 'border-[#32ff64] bg-[#32ff64]/10 text-white' 
-                    : 'border-gray-800 text-gray-500 hover:border-gray-600 bg-black/40'
+                key={mode.name}
+                onClick={() => mode.enabled && setPlayerCount(mode.name)}
+                disabled={!mode.enabled}
+                className={`p-4 border text-center font-bold uppercase text-sm transition-all relative ${
+                  !mode.enabled
+                    ? 'border-gray-800 text-gray-700 bg-black/40 cursor-not-allowed opacity-50'
+                    : playerCount === mode.name 
+                      ? 'border-[#32ff64] bg-[#32ff64]/10 text-white' 
+                      : 'border-gray-800 text-gray-500 hover:border-gray-600 bg-black/40'
                 }`}
               >
-                {mode}
+                {mode.name}
+                {!mode.enabled && (
+                  <span className="block text-[10px] text-gray-600 mt-1 normal-case tracking-normal">Coming Soon</span>
+                )}
               </button>
             ))}
           </div>

@@ -1,27 +1,39 @@
-# React + TypeScript + Vite
+# First Starfighter
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A dark, atmospheric military strategy game where you command a fleet of aerial drones in high-stakes infiltration missions. Inspired by Robotech Shadow Mechs and HR Giger aesthetics.
 
-Currently, two official plugins are available:
+## How It Works
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+You play as the Supreme Commander, issuing fluid strategic directives to your AI Game Master. Describe your tactics in broad strokes — the AI evaluates your strategy, rolls virtual dice with tactical modifiers, and narrates the cinematic outcome. Every decision carries risk.
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Frontend:** React + TypeScript + Vite + TailwindCSS
+- **Audio:** Procedural Web Audio API synthesizer (dark ambient drone)
+- **AI Backend:** Netlify Serverless Functions → Google Gemini API
+- **Hosting:** Netlify
 
-- Configure the top-level `parserOptions` property like this:
+## Local Development
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+```bash
+npm install
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Environment Variables
+
+For the AI Game Master to function, set `GEMINI_API_KEY` in your Netlify dashboard under **Site Settings → Environment Variables**.
+
+## Game Modes
+
+- **1P vs AI** — Single player against the AI Game Master
+- **1v1 Local** — Coming soon
+
+## Difficulty Levels
+
+| Level | Description |
+|-------|-------------|
+| Recruit | High margin for error. Zero casualties likely. |
+| Veteran | Moderate risk. Standard strategic evaluation. |
+| Commander | High risk. Even perfect strategies incur cost. |
+| Starfighter | Nightmare. Survival is not guaranteed. |

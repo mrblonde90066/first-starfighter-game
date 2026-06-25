@@ -1,14 +1,25 @@
 export class AudioController {
   private ctx: AudioContext | null = null;
   private isPlaying = false;
+  private oscillators: OscillatorNode[] = [];
+  private masterGain: GainNode | null = null;
 
   public init() {
     if (this.isPlaying) return;
     
     try {
-      // Create audio context
-      const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-      this.ctx = new AudioContext();
+      // Create audio context with Safari/iOS fallback
+      const Ctor =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext?: typeof AudioContext })
+          .webkitAudioContext;
+      if (!Ctor) return;
+      this.ctx = new Ctor();
+      
+      // Defensive resume for Safari/iOS suspended contexts
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
       
       // 1. Deep Sub Bass Oscillator
       const osc1 = this.ctx.createOscillator();
@@ -40,33 +51,59 @@ export class AudioController {
       const delay = this.ctx.createDelay();
       delay.delayTime.value = 0.5; // Half second delay
       const delayFeedback = this.ctx.createGain();
-      delayFeedback.gain.value = 0.4; // Feedback loop
+      delayFeedback.gain.value = 0.3; // Reduced from 0.4 to prevent energy accumulation
       
       delay.connect(delayFeedback);
       delayFeedback.connect(delay);
       
       // 6. Master Volume
-      const masterGain = this.ctx.createGain();
-      masterGain.gain.setValueAtTime(0.2, this.ctx.currentTime); // Keep it quiet and atmospheric
+      this.masterGain = this.ctx.createGain();
+      this.masterGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
       
       // Routing
-      osc1.connect(masterGain);
+      osc1.connect(this.masterGain);
       osc2.connect(filter);
-      filter.connect(masterGain);
+      filter.connect(this.masterGain);
       
       // Route through delay for that echo/reverb feel
-      masterGain.connect(delay);
+      this.masterGain.connect(delay);
       delay.connect(this.ctx.destination);
-      masterGain.connect(this.ctx.destination);
+      this.masterGain.connect(this.ctx.destination);
       
-      // Start the drone
+      // Start the drone and store references for cleanup
       osc1.start();
       osc2.start();
       lfo.start();
+      this.oscillators = [osc1, osc2, lfo];
       
       this.isPlaying = true;
     } catch (e) {
       console.warn("AudioContext failed to start", e);
+    }
+  }
+
+  public stop() {
+    this.oscillators.forEach(osc => {
+      try { osc.stop(); } catch { /* already stopped */ }
+    });
+    this.oscillators = [];
+    if (this.ctx) {
+      this.ctx.close();
+      this.ctx = null;
+    }
+    this.masterGain = null;
+    this.isPlaying = false;
+  }
+
+  public mute() {
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
+    }
+  }
+
+  public unmute() {
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
     }
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Send, Map, Activity, Radio } from 'lucide-react'
+import { Send, Map, Activity, Radio, Loader2 } from 'lucide-react'
 
 interface GameHUDProps {
   difficulty: string
@@ -13,12 +13,14 @@ interface LogEntry {
   timestamp: string
 }
 
-export default function GameHUD({ difficulty }: GameHUDProps) {
+export default function GameHUD({ difficulty, playerCount }: GameHUDProps) {
   const [strategy, setStrategy] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [conversationHistory, setConversationHistory] = useState<{ role: string; content: string }[]>([])
   const [logs, setLogs] = useState<LogEntry[]>([
     {
       sender: 'GM',
-      text: "INITIATING UPLINK...\nCONNECTION ESTABLISHED.\n\nWelcome to Aegis-7 Orbital Shipyard. The facility is derelict, but intelligence suggests heavy automated defenses and enemy patrols. Your objective: Infiltrate, locate the Dreadnought construction bay, and sabotage production.\n\nYou have 20 Vanguard drones holding at the perimeter.\n\n[SYSTEM CALIBRATION - HOW TO PLAY]\nFirst Starfighter uses a fluid strategy system. Describe your broad-strokes tactical plan rather than issuing simple commands. Tell me how you want to deploy your units and what Active Modules (listed on the right) you want to utilize.\n\nEXAMPLE: 'I want to send 5 drones using Optical Camo to scout the main corridor. The remaining 15 will hold back and prepare Depth Charges for a breach if the scouts are compromised.'\n\nAwaiting your strategic directives for the infiltration phase. How do we proceed, Commander?",
+      text: "INITIATING UPLINK...\nCONNECTION ESTABLISHED.\n\nWelcome to Aegis-7 Orbital Shipyard. The facility is derelict, but intelligence suggests heavy automated defenses and enemy patrols. Your objective: Infiltrate, locate the Dreadnought construction bay, and sabotage production.\n\nYou have 20 Vanguard drones holding at the perimeter.\n\n[SYSTEM CALIBRATION - HOW TO PLAY]\nFirst Starfighter uses a fluid strategy system. Describe your broad-strokes tactical plan rather than issuing simple commands. Tell me how you want to deploy your units and what Active Modules (listed on the right) you want to utilize.\n\n[HOW OUTCOMES ARE DETERMINED]\nYour strategy is evaluated against the battlefield conditions. Smart tactical choices earn positive modifiers; poor ones earn penalties. A virtual d20 is rolled and your modifier is applied. The result determines how well your plan succeeds — or how badly it fails. Higher difficulty settings reduce your modifiers and increase enemy response.\n\nEXAMPLE: 'I want to send 5 drones using Optical Camo to scout the main corridor. The remaining 15 will hold back and prepare Depth Charges for a breach if the scouts are compromised.'\n\nAwaiting your strategic directives for the infiltration phase. How do we proceed, Commander?",
       timestamp: new Date().toLocaleTimeString()
     }
   ])
@@ -39,27 +41,68 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
     }
   }, [logs])
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!strategy.trim()) return
+    if (!strategy.trim() || isLoading) return
+
+    const playerMessage = strategy
+    setStrategy('')
 
     // Add player input to log
     setLogs(prev => [...prev, {
       sender: 'Player',
-      text: strategy,
+      text: playerMessage,
       timestamp: new Date().toLocaleTimeString()
     }])
 
-    // Mock GM Response
-    setTimeout(() => {
+    // Build conversation history for the AI
+    const updatedHistory = [
+      ...conversationHistory,
+      { role: 'user', content: playerMessage }
+    ]
+    setConversationHistory(updatedHistory)
+
+    // Call the AI Game Master
+    setIsLoading(true)
+    try {
+      const response = await fetch('/.netlify/functions/game-master', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          strategy: playerMessage,
+          difficulty,
+          playerCount,
+          conversationHistory: updatedHistory,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Server error: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const gmText = data.response || 'Signal lost. Attempting reconnection...'
+
       setLogs(prev => [...prev, {
         sender: 'GM',
-        text: `Strategy locked. Analyzing threat matrix based on [${difficulty}] parameters... \n\nVirtual Dice Roll: 14 + Modifiers (+2). Result: 16 (Success with Minor Cost).\n\nYour drones execute the maneuver. The infiltration is mostly successful, but an unexpected plasma vent flare damages the armor on two units. They are pushing forward to the central bay.`,
+        text: gmText,
         timestamp: new Date().toLocaleTimeString()
       }])
-    }, 1500)
 
-    setStrategy('')
+      setConversationHistory(prev => [
+        ...prev,
+        { role: 'assistant', content: gmText }
+      ])
+    } catch (err) {
+      console.error('GM API error:', err)
+      setLogs(prev => [...prev, {
+        sender: 'GM',
+        text: '[COMM ERROR] Unable to reach AI Game Master. Check your connection and try again.',
+        timestamp: new Date().toLocaleTimeString()
+      }])
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -108,6 +151,21 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
               </div>
             </motion.div>
           ))}
+          {isLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col items-start"
+            >
+              <span className="text-[10px] mb-1 opacity-50 text-[#32ff64]">
+                AI GAME MASTER
+              </span>
+              <div className="p-4 rounded border bg-black/60 border-[#32ff64]/30 text-[#32ff64] flex items-center gap-3">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Transmitting... Analyzing strategic parameters...
+              </div>
+            </motion.div>
+          )}
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t border-[#32ff64]/20 flex gap-4">
@@ -116,9 +174,14 @@ export default function GameHUD({ difficulty }: GameHUDProps) {
             value={strategy}
             onChange={(e) => setStrategy(e.target.value)}
             placeholder="Enter fluid strategic directives..."
-            className="flex-1 bg-black/50 border border-gray-700 rounded px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#32ff64]/50 transition-colors"
+            disabled={isLoading}
+            className="flex-1 bg-black/50 border border-gray-700 rounded px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#32ff64]/50 transition-colors disabled:opacity-50"
           />
-          <button type="submit" className="tech-button px-6 rounded flex items-center justify-center">
+          <button 
+            type="submit" 
+            disabled={isLoading}
+            className="tech-button px-6 rounded flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Send className="w-5 h-5" />
           </button>
         </form>
