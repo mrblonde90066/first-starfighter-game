@@ -25,6 +25,8 @@ function pickRandom(pool: Scenario[], count: number): Scenario[] {
 }
 
 export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScreenProps) {
+  const accent = isFairyMode ? '#ff69b4' : '#32ff64'
+  const accentRgb = isFairyMode ? '255,105,180' : '50,255,100'
   const scenarioPool = isFairyMode ? fairyScenarios : allScenarios
   const [difficulty, setDifficulty] = useState(DEFAULTS.difficulty)
   const [playerCount, setPlayerCount] = useState(DEFAULTS.playerCount)
@@ -96,8 +98,8 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
         <div className="glass-panel p-8 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-10">
           {/* Left Column: Difficulty */}
           <div>
-            <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b border-[#32ff64]/20 pb-2">
-              <ShieldAlert className="w-4 h-4" /> Threat Assessment
+            <h2 style={{ color: accent, borderColor: `rgba(${accentRgb}, 0.2)` }} className="uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b pb-2">
+              <ShieldAlert className="w-4 h-4" /> {isFairyMode ? 'Enchantment Level' : 'Threat Assessment'}
             </h2>
             <div className="space-y-3">
               {difficulties.map(diff => (
@@ -106,9 +108,10 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
                   onClick={() => setDifficulty(diff.name)}
                   className={`w-full text-left p-4 border transition-all ${
                     difficulty === diff.name 
-                      ? 'border-[#32ff64] bg-[#32ff64]/10 shadow-[0_0_15px_rgba(50,255,100,0.1)]' 
+                      ? '' 
                       : 'border-gray-800 hover:border-gray-600 bg-black/40'
                   }`}
+                  style={difficulty === diff.name ? { borderColor: accent, backgroundColor: `rgba(${accentRgb}, 0.1)`, boxShadow: `0 0 15px rgba(${accentRgb}, 0.1)` } : {}}
                 >
                   <div className="font-bold text-lg uppercase mb-1 text-gray-200">{diff.name}</div>
                   <div className="text-xs text-gray-500">{diff.desc}</div>
@@ -120,8 +123,8 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
           {/* Right Column: Player Mode & Playstyle */}
           <div className="flex flex-col space-y-8">
             <div>
-              <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b border-[#32ff64]/20 pb-2">
-                <Users className="w-4 h-4" /> Combatants
+              <h2 style={{ color: accent, borderColor: `rgba(${accentRgb}, 0.2)` }} className="uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b pb-2">
+                <Users className="w-4 h-4" /> {isFairyMode ? 'Allies' : 'Combatants'}
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 {modes.map(mode => (
@@ -133,9 +136,10 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
                       !mode.enabled
                         ? 'border-gray-800 text-gray-700 bg-black/40 cursor-not-allowed opacity-50'
                         : playerCount === mode.name 
-                          ? 'border-[#32ff64] bg-[#32ff64]/10 text-white' 
+                          ? 'text-white' 
                           : 'border-gray-800 text-gray-500 hover:border-gray-600 bg-black/40'
                     }`}
+                    style={mode.enabled && playerCount === mode.name ? { borderColor: accent, backgroundColor: `rgba(${accentRgb}, 0.1)` } : {}}
                   >
                     {mode.name}
                     {!mode.enabled && (
@@ -147,8 +151,8 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
             </div>
 
             <div>
-              <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b border-[#32ff64]/20 pb-2">
-                <Radio className="w-4 h-4" /> Tactical Interface
+              <h2 style={{ color: accent, borderColor: `rgba(${accentRgb}, 0.2)` }} className="uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b pb-2">
+                <Radio className="w-4 h-4" /> {isFairyMode ? 'Battle Style' : 'Tactical Interface'}
               </h2>
               <div className="space-y-3">
                 {playstyles.map(style => (
@@ -157,9 +161,10 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
                     onClick={() => setPlaystyle(style.name)}
                     className={`w-full text-left p-4 border transition-all ${
                       playstyle === style.name 
-                        ? 'border-[#32ff64] bg-[#32ff64]/10 shadow-[0_0_15px_rgba(50,255,100,0.1)]' 
+                        ? '' 
                         : 'border-gray-800 hover:border-gray-600 bg-black/40'
                     }`}
+                    style={playstyle === style.name ? { borderColor: accent, backgroundColor: `rgba(${accentRgb}, 0.1)`, boxShadow: `0 0 15px rgba(${accentRgb}, 0.1)` } : {}}
                   >
                     <div className="font-bold text-lg uppercase mb-1 text-gray-200">{style.name}</div>
                     <div className="text-xs text-gray-500 leading-relaxed">{style.desc}</div>
@@ -172,14 +177,14 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
 
         {/* Bottom Row: Scenario Selection */}
         <div className="glass-panel p-8 rounded-xl">
-          <div className="flex items-center justify-between mb-6 border-b border-[#32ff64]/20 pb-2">
-            <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2">
-              <Crosshair className="w-4 h-4" /> Select Mission
+          <div className="flex items-center justify-between mb-6 border-b pb-2" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
+            <h2 style={{ color: accent }} className="uppercase tracking-widest text-sm flex items-center gap-2">
+              <Crosshair className="w-4 h-4" /> {isFairyMode ? 'Choose Quest' : 'Select Mission'}
             </h2>
             <button
               onClick={regenerateScenarios}
               disabled={loadingScenarios || hasRegenerated}
-              className="text-gray-500 hover:text-[#32ff64] transition-colors flex items-center gap-2 text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
+              className="text-gray-500 transition-colors flex items-center gap-2 text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <RefreshCw className={`w-3 h-3 ${loadingScenarios ? 'animate-spin' : ''}`} /> 
               {hasRegenerated ? 'Regeneration Used' : 'Regenerate (1 Remaining)'}
@@ -187,9 +192,9 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
           </div>
 
           {loadingScenarios && (
-            <div className="flex items-center justify-center py-16 text-[#32ff64]">
+            <div className="flex items-center justify-center py-16" style={{ color: accent }}>
               <Loader2 className="w-6 h-6 animate-spin mr-3" />
-              <span className="font-mono text-sm">Generating combat scenarios...</span>
+              <span className="font-mono text-sm">{isFairyMode ? 'Summoning enchanted quests...' : 'Generating combat scenarios...'}</span>
             </div>
           )}
 
@@ -208,11 +213,12 @@ export default function SetupScreen({ onLaunch, onBack, isFairyMode }: SetupScre
                   onClick={() => setSelectedScenario(i)}
                   className={`text-left p-5 border transition-all rounded-lg flex flex-col ${
                     selectedScenario === i
-                      ? 'border-[#32ff64] bg-[#32ff64]/10 shadow-[0_0_20px_rgba(50,255,100,0.1)]'
+                      ? ''
                       : 'border-gray-800 hover:border-gray-600 bg-black/40'
                   }`}
+                  style={selectedScenario === i ? { borderColor: accent, backgroundColor: `rgba(${accentRgb}, 0.1)`, boxShadow: `0 0 20px rgba(${accentRgb}, 0.1)` } : {}}
                 >
-                  <span className="text-[10px] text-[#32ff64] uppercase tracking-widest mb-2 opacity-70">
+                  <span className="text-[10px] uppercase tracking-widest mb-2 opacity-70" style={{ color: accent }}>
                     {scenario.type}
                   </span>
                   <h3 className="font-bold text-white text-lg uppercase mb-3">{scenario.title}</h3>

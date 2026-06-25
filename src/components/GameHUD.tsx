@@ -20,6 +20,8 @@ interface LogEntry {
 }
 
 export default function GameHUD({ difficulty, playerCount, playstyle, scenario, isFairyMode, onEndGame }: GameHUDProps) {
+  const accent = isFairyMode ? '#ff69b4' : '#32ff64'
+  const accentRgb = isFairyMode ? '255,105,180' : '50,255,100'
   const [strategy, setStrategy] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [missionResult, setMissionResult] = useState<'ongoing' | 'victory' | 'defeat'>('ongoing')
@@ -136,21 +138,21 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
     >
       {/* Left Panel: Map */}
       <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden min-h-[300px] lg:min-h-0 order-3 lg:order-none">
-        <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
-          <span className="text-[#32ff64] flex items-center gap-2"><Map className="w-3 h-3"/> TACTICAL OVERLAY</span>
+        <div className="bg-black/80 px-4 py-2 border-b flex items-center justify-between text-xs" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
+          <span style={{ color: accent }} className="flex items-center gap-2"><Map className="w-3 h-3"/> {isFairyMode ? 'ENCHANTED MAP' : 'TACTICAL OVERLAY'}</span>
           <span className="text-gray-500">{scenario.title.toUpperCase()}</span>
         </div>
         <div className="flex-1 bg-black/40 p-2 relative">
-          <img src="/assets/map.png" alt="Tactical Map" className="w-full h-full object-cover rounded opacity-80 border border-[#32ff64]/10" />
+          <img src={isFairyMode ? '/assets/fairy-map.png' : '/assets/map.png'} alt="Tactical Map" className="w-full h-full object-cover rounded opacity-80 border" style={{ borderColor: `rgba(${accentRgb}, 0.1)` }} />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent pointer-events-none" />
         </div>
       </div>
 
       {/* Center Panel: Console */}
       <div className="col-span-1 lg:col-span-6 glass-panel rounded-lg flex flex-col overflow-hidden h-[60vh] lg:h-auto order-1 lg:order-none">
-        <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
-          <span className="text-[#32ff64] flex items-center gap-2"><Radio className="w-3 h-3"/> COMMAND FEED</span>
-          <span className="text-gray-500">SECURE CHANNEL</span>
+        <div className="bg-black/80 px-4 py-2 border-b flex items-center justify-between text-xs" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
+          <span style={{ color: accent }} className="flex items-center gap-2"><Radio className="w-3 h-3"/> {isFairyMode ? 'FAIRY DISPATCH' : 'COMMAND FEED'}</span>
+          <span className="text-gray-500">{isFairyMode ? 'SPARKLE CHANNEL' : 'SECURE CHANNEL'}</span>
         </div>
         
         <div className="flex-1 overflow-y-auto p-6 space-y-6 font-mono text-sm scrollbar-thin scrollbar-thumb-gray-800">
@@ -162,14 +164,14 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
               key={i} 
               className={`flex flex-col ${log.sender === 'Player' ? 'items-end' : 'items-start'}`}
             >
-              <span className={`text-[10px] mb-1 opacity-50 ${log.sender === 'Player' ? 'text-blue-400' : 'text-[#32ff64]'}`}>
-                {log.sender === 'Player' ? 'SUPREME COMMANDER' : 'AI GAME MASTER'} // {log.timestamp}
+              <span className={`text-[10px] mb-1 opacity-50 ${log.sender === 'Player' ? 'text-blue-400' : ''}`} style={log.sender !== 'Player' ? { color: accent } : {}}>
+                {log.sender === 'Player' ? (isFairyMode ? 'FAIRY COMMANDER' : 'SUPREME COMMANDER') : (isFairyMode ? 'FAIRY GAME MASTER' : 'AI GAME MASTER')} // {log.timestamp}
               </span>
               <div className={`p-4 rounded border whitespace-pre-wrap max-w-[85%] ${
                 log.sender === 'Player' 
                   ? 'bg-blue-900/20 border-blue-500/30 text-blue-100' 
-                  : 'bg-black/60 border-[#32ff64]/30 text-gray-300'
-              }`}>
+                  : 'bg-black/60 text-gray-300'
+              }`} style={log.sender !== 'Player' ? { borderColor: `rgba(${accentRgb}, 0.3)` } : {}}>
                 {log.text}
               </div>
             </motion.div>
@@ -180,25 +182,25 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
               animate={{ opacity: 1, y: 0 }}
               className="flex flex-col items-start"
             >
-              <span className="text-[10px] mb-1 opacity-50 text-[#32ff64]">
-                AI GAME MASTER
+              <span className="text-[10px] mb-1 opacity-50" style={{ color: accent }}>
+                {isFairyMode ? 'FAIRY GAME MASTER' : 'AI GAME MASTER'}
               </span>
-              <div className="p-4 rounded border bg-black/60 border-[#32ff64]/30 text-[#32ff64] flex items-center gap-3">
+              <div className="p-4 rounded border bg-black/60 flex items-center gap-3" style={{ borderColor: `rgba(${accentRgb}, 0.3)`, color: accent }}>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Transmitting... Analyzing strategic parameters...
+                {isFairyMode ? 'Sprinkling pixie dust... Consulting the oracle...' : 'Transmitting... Analyzing strategic parameters...'}
               </div>
             </motion.div>
           )}
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t border-[#32ff64]/20 flex gap-4">
+        <form onSubmit={handleSubmit} className="p-4 bg-black/80 border-t flex gap-4" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
           <input 
             type="text"
             value={strategy}
             onChange={(e) => setStrategy(e.target.value)}
-            placeholder={missionResult !== 'ongoing' ? "Mission concluded." : "Enter fluid strategic directives..."}
+            placeholder={missionResult !== 'ongoing' ? "Mission concluded." : (isFairyMode ? "Command your fairy squadron..." : "Enter fluid strategic directives...")}
             disabled={isLoading || missionResult !== 'ongoing'}
-            className="flex-1 bg-black/50 border border-gray-700 rounded px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-[#32ff64]/50 transition-colors disabled:opacity-50"
+            className="flex-1 bg-black/50 border border-gray-700 rounded px-4 py-3 text-white font-mono text-sm focus:outline-none transition-colors disabled:opacity-50"
           />
           <button 
             type="submit" 
@@ -212,8 +214,8 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
 
       {/* Right Panel: Status */}
       <div className="col-span-1 lg:col-span-3 glass-panel rounded-lg flex flex-col overflow-hidden order-2 lg:order-none">
-        <div className="bg-black/80 px-4 py-2 border-b border-[#32ff64]/20 flex items-center justify-between text-xs">
-          <span className="text-[#32ff64] flex items-center gap-2"><Activity className="w-3 h-3"/> SQUADRON STATUS</span>
+        <div className="bg-black/80 px-4 py-2 border-b flex items-center justify-between text-xs" style={{ borderColor: `rgba(${accentRgb}, 0.2)` }}>
+          <span style={{ color: accent }} className="flex items-center gap-2"><Activity className="w-3 h-3"/> {isFairyMode ? 'FAIRY STATUS' : 'SQUADRON STATUS'}</span>
         </div>
         <div className="p-4 space-y-6">
           
@@ -223,7 +225,7 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
               <span className="text-4xl font-black text-white">
                 {missionResult === 'defeat' ? '0' : scenario.droneCount}<span className="text-lg text-gray-600">/{scenario.droneCount}</span>
               </span>
-              <span className={`text-xs mb-1 uppercase ${missionResult === 'defeat' ? 'text-red-500' : 'text-[#32ff64]'}`}>
+              <span className={`text-xs mb-1 uppercase ${missionResult === 'defeat' ? 'text-red-500' : ''}`} style={missionResult !== 'defeat' ? { color: accent } : {}}>
                 {missionResult === 'defeat' ? 'CRITICAL' : 'Optimal'}
               </span>
             </div>
@@ -263,30 +265,39 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
             animate={{ opacity: 1 }}
             className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
           >
-            <div className={`p-10 max-w-2xl w-full text-center border-y-4 ${missionResult === 'victory' ? 'border-[#32ff64] shadow-[0_0_100px_rgba(50,255,100,0.2)]' : 'border-red-600 shadow-[0_0_100px_rgba(220,38,38,0.2)]'}`}>
+            <div 
+              className="p-10 max-w-2xl w-full text-center border-y-4"
+              style={{
+                borderColor: missionResult === 'victory' ? accent : '#dc2626',
+                boxShadow: missionResult === 'victory' ? `0 0 100px rgba(${accentRgb}, 0.2)` : '0 0 100px rgba(220,38,38,0.2)',
+              }}
+            >
               <motion.h1 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className={`text-5xl font-black tracking-widest uppercase mb-6 ${missionResult === 'victory' ? 'text-[#32ff64]' : 'text-red-500'}`}
+                className="text-5xl font-black tracking-widest uppercase mb-6"
+                style={{ color: missionResult === 'victory' ? accent : '#ef4444' }}
               >
-                {missionResult === 'victory' ? 'Mission Accomplished' : 'Squadron Lost'}
+                {missionResult === 'victory'
+                  ? (isFairyMode ? 'Sparkle Victory' : 'Mission Accomplished')
+                  : (isFairyMode ? 'Fairies Fallen' : 'Squadron Lost')}
               </motion.h1>
               
               <p className="text-gray-400 text-lg mb-10">
                 {missionResult === 'victory' 
-                  ? 'Objective secured. Awaiting extraction...' 
-                  : 'Total catastrophic failure. Signal terminated.'}
+                  ? (isFairyMode ? 'The Rainbow Sparkles Galaxy is saved... for now. ✨' : 'Objective secured. Awaiting extraction...') 
+                  : (isFairyMode ? 'All fairies have been vanquished. The glitter fades to darkness...' : 'Total catastrophic failure. Signal terminated.')}
               </p>
 
               <button 
                 onClick={onEndGame}
-                className={`px-8 py-4 font-bold tracking-widest uppercase border transition-colors ${
-                  missionResult === 'victory'
-                    ? 'border-[#32ff64] text-[#32ff64] hover:bg-[#32ff64]/20'
-                    : 'border-red-500 text-red-500 hover:bg-red-500/20'
-                }`}
+                className="px-8 py-4 font-bold tracking-widest uppercase border transition-colors"
+                style={{
+                  borderColor: missionResult === 'victory' ? accent : '#ef4444',
+                  color: missionResult === 'victory' ? accent : '#ef4444',
+                }}
               >
-                Return to Base
+                {isFairyMode ? 'Return to Meadow' : 'Return to Base'}
               </button>
             </div>
           </motion.div>

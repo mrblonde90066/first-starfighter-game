@@ -81,7 +81,28 @@
   }
 
   .fairy-mode {
-    filter: hue-rotate(200deg) saturate(1.5);
+    --text-accent: #ff69b4;
+    --panel-border: rgba(255, 105, 180, 0.25);
+    --text-alert: #ff6ec7;
+    --text-warning: #ffd700;
+  }
+
+  .fairy-mode .tech-button {
+    border-color: #ff69b4;
+    color: #ff69b4;
+  }
+
+  .fairy-mode .tech-button::before {
+    background: #ff69b4;
+  }
+
+  .fairy-mode .tech-button:hover {
+    box-shadow: 0 0 15px #ff69b4;
+  }
+
+  .fairy-mode .glass-panel {
+    border-color: rgba(255, 105, 180, 0.25);
+    box-shadow: 0 4px 30px rgba(255, 105, 180, 0.1);
   }
 
   .fairy-mode::after {
@@ -89,17 +110,23 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(circle, #fff 10%, transparent 10%), radial-gradient(circle, #fff 10%, transparent 10%);
-    background-size: 50px 50px;
-    background-position: 0 0, 25px 25px;
-    opacity: 0.1;
-    mix-blend-mode: screen;
-    animation: twinkle 3s infinite alternate;
-    z-index: 50;
+    z-index: 999;
+    background-image:
+      radial-gradient(1px 1px at 10% 20%, #fff 50%, transparent 100%),
+      radial-gradient(1px 1px at 30% 70%, #ffd700 50%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 50% 40%, #ff69b4 50%, transparent 100%),
+      radial-gradient(1px 1px at 70% 10%, #fff 50%, transparent 100%),
+      radial-gradient(1px 1px at 90% 80%, #ffd700 50%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 15% 90%, #ff69b4 50%, transparent 100%),
+      radial-gradient(1px 1px at 85% 50%, #fff 50%, transparent 100%);
+    background-size: 200px 200px;
+    opacity: 0.4;
+    animation: sparkle-drift 8s linear infinite;
   }
 
-  @keyframes twinkle {
-    0% { opacity: 0.05; transform: scale(1); }
-    100% { opacity: 0.2; transform: scale(1.05); }
+  @keyframes sparkle-drift {
+    0% { transform: translateY(0); opacity: 0.3; }
+    50% { opacity: 0.5; }
+    100% { transform: translateY(-200px); opacity: 0.3; }
   }
 }
