@@ -24,7 +24,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       style={{
         backgroundImage: 'url(/assets/background.png)',
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: 'top center',
       }}
     >
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none" />
@@ -32,7 +32,7 @@ export default function LandingPage({ onStart }: LandingPageProps) {
       {/* Secret Easter Egg Trigger: Robot Face Area */}
       <div 
         onClick={() => handleStart(true)}
-        className="absolute top-[10%] left-1/2 -translate-x-1/2 w-[30%] h-[30%] z-20 cursor-default"
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[25%] z-20 cursor-default"
         title=""
       />
       
