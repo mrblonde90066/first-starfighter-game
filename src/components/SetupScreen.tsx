@@ -23,6 +23,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
   const [selectedScenario, setSelectedScenario] = useState<number | null>(null)
   const [loadingScenarios, setLoadingScenarios] = useState(true)
   const [scenarioError, setScenarioError] = useState(false)
+  const [hasRegenerated, setHasRegenerated] = useState(false)
 
   const difficulties = [
     { name: 'Recruit', desc: 'High margin for error. Zero casualties likely.' },
@@ -36,7 +37,8 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
     { name: '1v1 Local', enabled: false },
   ]
 
-  const fetchScenarios = async () => {
+  const fetchScenarios = async (isRegen = false) => {
+    if (isRegen && hasRegenerated) return
     setLoadingScenarios(true)
     setScenarioError(false)
     setSelectedScenario(null)
@@ -49,6 +51,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
       if (!res.ok) throw new Error('Failed to fetch')
       const data = await res.json()
       setScenarios(data.scenarios || [])
+      if (isRegen) setHasRegenerated(true)
     } catch {
       setScenarioError(true)
       setScenarios([])
@@ -137,12 +140,12 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
               <Crosshair className="w-4 h-4" /> Select Mission
             </h2>
             <button
-              onClick={fetchScenarios}
-              disabled={loadingScenarios}
-              className="text-gray-500 hover:text-[#32ff64] transition-colors flex items-center gap-2 text-xs uppercase tracking-wider disabled:opacity-50"
+              onClick={() => fetchScenarios(true)}
+              disabled={loadingScenarios || hasRegenerated}
+              className="text-gray-500 hover:text-[#32ff64] transition-colors flex items-center gap-2 text-xs uppercase tracking-wider disabled:opacity-30 disabled:cursor-not-allowed"
             >
               <RefreshCw className={`w-3 h-3 ${loadingScenarios ? 'animate-spin' : ''}`} /> 
-              Generate New
+              {hasRegenerated ? 'Regeneration Used' : 'Regenerate (1 Remaining)'}
             </button>
           </div>
 
