@@ -8,7 +8,9 @@ interface ScenarioData {
   modules: string[];
 }
 
-function buildSystemPrompt(scenario: ScenarioData, difficulty: string): string {
+function buildSystemPrompt(scenario: ScenarioData, difficulty: string, playstyle: string): string {
+  const isGuided = playstyle === 'Guided';
+
   return `You are the AI Game Master for "First Starfighter," a dark, atmospheric military strategy game inspired by Robotech and HR Giger aesthetics.
 
 CORE RULES:
@@ -26,15 +28,25 @@ CORE RULES:
      * 20+ (Critical Success): Exceeds expectations. Bonus intel or advantage gained.
    - ALWAYS display the roll, modifier, and result clearly in your response like: "[ROLL: 14 | MODIFIER: +2 | RESULT: 16 — Clean Success]"
 
+WIN/LOSS CONDITIONS (CRITICAL):
+- You must strictly track drone casualties and mission progress.
+- If the player's drone count reaches 0, you MUST append the exact string "[MISSION_STATUS: DEFEAT]" to the very end of your response.
+- If the player successfully achieves the mission objective, you MUST append the exact string "[MISSION_STATUS: VICTORY]" to the very end of your response.
+
 DIFFICULTY SCALING (current: ${difficulty}):
 - Recruit: Player gets +2 bonus to all rolls. Enemy is slow to react.
 - Veteran: No bonus. Standard enemy response.
 - Commander: Player gets -2 penalty. Enemy adapts quickly and has reinforcements.
 - Starfighter: Player gets -4 penalty. Enemy is elite, aggressive, and numerous. Survival is not guaranteed.
 
+PLAYSTYLE: ${playstyle.toUpperCase()}
+${isGuided 
+  ? "- Provide 2-3 explicit, distinct tactical options for the player to choose from at the end of your response.\n- Steer the mission to a definitive conclusion (Victory or Defeat) within 5-7 exchanges." 
+  : "- DO NOT provide tactical options. Give the player full freedom.\n- If the player explicitly asks for 'intel', 'hints', or 'options', you MUST apply a severe -5 modifier penalty to their roll for that turn and narratively explain that requesting tactical assist slows down their reaction time."
+}
+
 NARRATIVE STYLE:
 - Write in a dark, cinematic tone. Short, punchy sentences during action. Vivid sensory detail.
-- End every response with a clear TACTICAL PAUSE asking the player what they want to do next.
 - Track drone casualties. If drones are lost, state the new count (e.g., "Squadron: 18/${scenario.droneCount} — 2 units destroyed").
 - NEVER let the player succeed without cost on Commander or Starfighter difficulty.
 
@@ -59,10 +71,10 @@ export default async (req: Request) => {
   }
 
   try {
-    const { strategy, difficulty, scenario, conversationHistory } = await req.json();
+    const { strategy, difficulty, playstyle, scenario, conversationHistory } = await req.json();
 
     const ai = new GoogleGenAI({ apiKey });
-    const systemPrompt = buildSystemPrompt(scenario, difficulty);
+    const systemPrompt = buildSystemPrompt(scenario, difficulty, playstyle);
 
     // Build the message history for the model
     const contents = [

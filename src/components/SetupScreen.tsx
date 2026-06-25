@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ShieldAlert, Users, ChevronRight, ArrowLeft, Crosshair, Loader2, RefreshCw } from 'lucide-react'
+import { ShieldAlert, Users, ChevronRight, ArrowLeft, Crosshair, Loader2, RefreshCw, Radio } from 'lucide-react'
 import { DEFAULTS } from '../constants'
 import allScenarios from '../data/scenarios.json'
 
@@ -13,7 +13,7 @@ export interface Scenario {
 }
 
 interface SetupScreenProps {
-  onLaunch: (difficulty: string, players: string, scenario: Scenario) => void
+  onLaunch: (difficulty: string, players: string, scenario: Scenario, playstyle: string) => void
   onBack: () => void
 }
 
@@ -25,6 +25,7 @@ function pickRandom(pool: Scenario[], count: number): Scenario[] {
 export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
   const [difficulty, setDifficulty] = useState(DEFAULTS.difficulty)
   const [playerCount, setPlayerCount] = useState(DEFAULTS.playerCount)
+  const [playstyle, setPlaystyle] = useState(DEFAULTS.playstyle)
   const [scenarios, setScenarios] = useState<Scenario[]>(() => pickRandom(allScenarios, 3))
   const [selectedScenario, setSelectedScenario] = useState<number | null>(null)
   const [loadingScenarios, setLoadingScenarios] = useState(false)
@@ -41,6 +42,11 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
   const modes = [
     { name: '1P vs AI', enabled: true },
     { name: '1v1 Local', enabled: false },
+  ]
+
+  const playstyles = [
+    { name: 'Guided', desc: 'AI provides tactical options. Shorter missions (5-7 rounds).' },
+    { name: 'Open', desc: 'No prompts. Full freedom. Requesting intel severely penalizes your score. Mission length depends entirely on how quickly you achieve the objective.' }
   ]
 
   const regenerateScenarios = async () => {
@@ -108,31 +114,55 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
             </div>
           </div>
 
-          {/* Right Column: Player Mode */}
-          <div className="flex flex-col">
-            <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b border-[#32ff64]/20 pb-2">
-              <Users className="w-4 h-4" /> Combatants
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              {modes.map(mode => (
-                <button
-                  key={mode.name}
-                  onClick={() => mode.enabled && setPlayerCount(mode.name)}
-                  disabled={!mode.enabled}
-                  className={`p-4 border text-center font-bold uppercase text-sm transition-all relative ${
-                    !mode.enabled
-                      ? 'border-gray-800 text-gray-700 bg-black/40 cursor-not-allowed opacity-50'
-                      : playerCount === mode.name 
-                        ? 'border-[#32ff64] bg-[#32ff64]/10 text-white' 
-                        : 'border-gray-800 text-gray-500 hover:border-gray-600 bg-black/40'
-                  }`}
-                >
-                  {mode.name}
-                  {!mode.enabled && (
-                    <span className="block text-[10px] text-gray-600 mt-1 normal-case tracking-normal">Coming Soon</span>
-                  )}
-                </button>
-              ))}
+          {/* Right Column: Player Mode & Playstyle */}
+          <div className="flex flex-col space-y-8">
+            <div>
+              <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b border-[#32ff64]/20 pb-2">
+                <Users className="w-4 h-4" /> Combatants
+              </h2>
+              <div className="grid grid-cols-2 gap-4">
+                {modes.map(mode => (
+                  <button
+                    key={mode.name}
+                    onClick={() => mode.enabled && setPlayerCount(mode.name)}
+                    disabled={!mode.enabled}
+                    className={`p-4 border text-center font-bold uppercase text-sm transition-all relative ${
+                      !mode.enabled
+                        ? 'border-gray-800 text-gray-700 bg-black/40 cursor-not-allowed opacity-50'
+                        : playerCount === mode.name 
+                          ? 'border-[#32ff64] bg-[#32ff64]/10 text-white' 
+                          : 'border-gray-800 text-gray-500 hover:border-gray-600 bg-black/40'
+                    }`}
+                  >
+                    {mode.name}
+                    {!mode.enabled && (
+                      <span className="block text-[10px] text-gray-600 mt-1 normal-case tracking-normal">Coming Soon</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="text-[#32ff64] uppercase tracking-widest text-sm flex items-center gap-2 mb-6 border-b border-[#32ff64]/20 pb-2">
+                <Radio className="w-4 h-4" /> Tactical Interface
+              </h2>
+              <div className="space-y-3">
+                {playstyles.map(style => (
+                  <button
+                    key={style.name}
+                    onClick={() => setPlaystyle(style.name)}
+                    className={`w-full text-left p-4 border transition-all ${
+                      playstyle === style.name 
+                        ? 'border-[#32ff64] bg-[#32ff64]/10 shadow-[0_0_15px_rgba(50,255,100,0.1)]' 
+                        : 'border-gray-800 hover:border-gray-600 bg-black/40'
+                    }`}
+                  >
+                    <div className="font-bold text-lg uppercase mb-1 text-gray-200">{style.name}</div>
+                    <div className="text-xs text-gray-500 leading-relaxed">{style.desc}</div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -208,7 +238,7 @@ export default function SetupScreen({ onLaunch, onBack }: SetupScreenProps) {
           <motion.button
             onClick={() => {
               if (selectedScenario !== null && scenarios[selectedScenario]) {
-                onLaunch(difficulty, playerCount, scenarios[selectedScenario])
+                onLaunch(difficulty, playerCount, scenarios[selectedScenario], playstyle)
               }
             }}
             disabled={selectedScenario === null}

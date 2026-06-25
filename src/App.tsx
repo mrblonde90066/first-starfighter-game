@@ -12,6 +12,7 @@ function App() {
   const [appState, setAppState] = useState<AppState>('landing')
   const [difficulty, setDifficulty] = useState<string>(DEFAULTS.difficulty)
   const [playerCount, setPlayerCount] = useState<string>(DEFAULTS.playerCount)
+  const [playstyle, setPlaystyle] = useState<string>(DEFAULTS.playstyle)
   const [scenario, setScenario] = useState<Scenario | null>(null)
 
   return (
@@ -26,9 +27,10 @@ function App() {
         {appState === 'setup' && (
           <SetupScreen 
             key="setup"
-            onLaunch={(diff, players, sc) => {
+            onLaunch={(diff, players, sc, style) => {
               setDifficulty(diff)
               setPlayerCount(players)
+              setPlaystyle(style)
               setScenario(sc)
               setAppState('playing')
             }} 
@@ -41,7 +43,9 @@ function App() {
             key="playing"
             difficulty={difficulty}
             playerCount={playerCount}
+            playstyle={playstyle}
             scenario={scenario}
+            onEndGame={() => setAppState('setup')}
           />
         )}
       </AnimatePresence>

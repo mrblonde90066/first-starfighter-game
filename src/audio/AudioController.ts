@@ -4,6 +4,7 @@ export class AudioController {
   private oscillators: OscillatorNode[] = [];
   private masterGain: GainNode | null = null;
   private loopTimer: number | null = null;
+  public isSeinfeldMode = false;
 
   public init() {
     if (this.isPlaying) return;
@@ -24,8 +25,10 @@ export class AudioController {
 
       // 10% chance of the Seinfeld easter egg
       if (Math.random() < 0.1) {
+        this.isSeinfeldMode = true;
         this.initSeinfeld();
       } else {
+        this.isSeinfeldMode = false;
         this.initDarkAmbient();
       }
       
@@ -197,6 +200,113 @@ export class AudioController {
     if (this.masterGain && this.ctx) {
       this.masterGain.gain.setValueAtTime(0.2, this.ctx.currentTime);
     }
+  }
+
+  public playDefeatSound() {
+    this.stop(); // Stop the background loop
+
+    // We must re-init a temporary context if stopped, or just use a new one for the one-shot
+    const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return;
+    const tempCtx = new Ctor();
+
+    const master = tempCtx.createGain();
+    master.gain.value = 0.5;
+    master.connect(tempCtx.destination);
+
+    if (this.isSeinfeldMode) {
+      // Sad trombone: Wah wah wahhh
+      const notes = [
+        { freq: 311.13, dur: 0.4 }, // Eb4
+        { freq: 293.66, dur: 0.4 }, // D4
+        { freq: 277.18, dur: 0.4 }, // Db4
+        { freq: 261.63, dur: 1.2 }, // C4
+      ];
+
+      let time = tempCtx.currentTime;
+      notes.forEach((note, i) => {
+        const osc = tempCtx.createOscillator();
+        osc.type = 'sawtooth'; // brassy
+        
+        const env = tempCtx.createGain();
+        env.gain.setValueAtTime(0, time);
+        env.gain.linearRampToValueAtTime(0.5, time + 0.05);
+        
+        if (i === notes.length - 1) {
+          // the final "wahhh" bends down and fades slowly
+          osc.frequency.setValueAtTime(note.freq, time);
+          osc.frequency.exponentialRampToValueAtTime(note.freq * 0.8, time + note.dur);
+          env.gain.exponentialRampToValueAtTime(0.01, time + note.dur);
+        } else {
+          osc.frequency.setValueAtTime(note.freq, time);
+          env.gain.linearRampToValueAtTime(0, time + note.dur - 0.05);
+        }
+
+        osc.connect(env);
+        env.connect(master);
+        osc.start(time);
+        osc.stop(time + note.dur);
+        time += note.dur;
+      });
+
+      // Close context after sound finishes
+      setTimeout(() => tempCtx.close(), time * 1000 + 500);
+
+    } else {
+      // Dark glitchy failure sound
+      const osc = tempCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(100, tempCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(10, tempCtx.currentTime + 2);
+
+      const env = tempCtx.createGain();
+      env.gain.setValueAtTime(0.8, tempCtx.currentTime);
+      env.gain.exponentialRampToValueAtTime(0.01, tempCtx.currentTime + 2);
+
+      osc.connect(env);
+      env.connect(master);
+      osc.start();
+      osc.stop(tempCtx.currentTime + 2);
+      
+      setTimeout(() => tempCtx.close(), 2500);
+    }
+  }
+
+  public playVictorySound() {
+    this.stop(); // Stop the background loop
+    
+    const Ctor = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (!Ctor) return;
+    const tempCtx = new Ctor();
+
+    const master = tempCtx.createGain();
+    master.gain.value = 0.5;
+    master.connect(tempCtx.destination);
+
+    // Triumphant synth swell
+    const osc1 = tempCtx.createOscillator();
+    const osc2 = tempCtx.createOscillator();
+    osc1.type = 'square';
+    osc2.type = 'sawtooth';
+    
+    osc1.frequency.setValueAtTime(440, tempCtx.currentTime); // A4
+    osc2.frequency.setValueAtTime(554.37, tempCtx.currentTime); // C#5 (Major third)
+
+    const env = tempCtx.createGain();
+    env.gain.setValueAtTime(0, tempCtx.currentTime);
+    env.gain.linearRampToValueAtTime(0.4, tempCtx.currentTime + 1); // Swell up
+    env.gain.exponentialRampToValueAtTime(0.01, tempCtx.currentTime + 4); // Fade out
+
+    osc1.connect(env);
+    osc2.connect(env);
+    env.connect(master);
+
+    osc1.start();
+    osc2.start();
+    osc1.stop(tempCtx.currentTime + 4);
+    osc2.stop(tempCtx.currentTime + 4);
+
+    setTimeout(() => tempCtx.close(), 4500);
   }
 }
 
