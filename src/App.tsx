@@ -14,14 +14,22 @@ function App() {
   const [playerCount, setPlayerCount] = useState<string>(DEFAULTS.playerCount)
   const [playstyle, setPlaystyle] = useState<string>(DEFAULTS.playstyle)
   const [scenario, setScenario] = useState<Scenario | null>(null)
+  const [isFairyMode, setIsFairyMode] = useState(false)
 
   return (
+    <div className={`min-h-screen ${isFairyMode ? 'fairy-mode' : ''}`}>
     <div className="min-h-screen w-full bg-[#050505] text-gray-200 relative overflow-hidden font-sans">
       <div className="scanline" />
       
       <AnimatePresence mode="wait">
         {appState === 'landing' && (
-          <LandingPage key="landing" onStart={() => setAppState('setup')} />
+          <LandingPage 
+            key="landing" 
+            onStart={(fairyMode) => {
+              setIsFairyMode(!!fairyMode);
+              setAppState('setup');
+            }} 
+          />
         )}
         
         {appState === 'setup' && (
@@ -45,11 +53,16 @@ function App() {
             playerCount={playerCount}
             playstyle={playstyle}
             scenario={scenario}
-            onEndGame={() => setAppState('setup')}
+            isFairyMode={isFairyMode}
+            onEndGame={() => {
+              setAppState('setup')
+              setIsFairyMode(false)
+            }}
           />
         )}
       </AnimatePresence>
     </div>
+  </div>
   )
 }
 

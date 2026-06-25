@@ -3,15 +3,15 @@ import { Terminal } from 'lucide-react'
 import { darkAmbientAudio } from '../audio/AudioController'
 
 interface LandingPageProps {
-  onStart: () => void
+  onStart: (forceFairy?: boolean) => void
 }
 
 export default function LandingPage({ onStart }: LandingPageProps) {
   
-  const handleStart = (forceSeinfeld = false) => {
+  const handleStart = (forceFairy = false) => {
     // Start the generative dark ambient audio engine on first user interaction
-    darkAmbientAudio.init(forceSeinfeld);
-    onStart();
+    darkAmbientAudio.init(forceFairy);
+    onStart(forceFairy);
   }
 
   return (

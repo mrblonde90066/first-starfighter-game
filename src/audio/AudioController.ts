@@ -4,9 +4,9 @@ export class AudioController {
   private oscillators: OscillatorNode[] = [];
   private masterGain: GainNode | null = null;
   private loopTimer: number | null = null;
-  public isSeinfeldMode = false;
+  public isFairyMode = false;
 
-  public init(forceSeinfeld = false) {
+  public init(isFairyMode = false) {
     if (this.isPlaying) return;
     
     try {
@@ -23,14 +23,8 @@ export class AudioController {
         this.ctx.resume();
       }
 
-      // 10% chance of the Seinfeld easter egg, or 100% if forced
-      if (forceSeinfeld || Math.random() < 0.1) {
-        this.isSeinfeldMode = true;
-        this.initSeinfeld();
-      } else {
-        this.isSeinfeldMode = false;
-        this.initDarkAmbient();
-      }
+      this.isFairyMode = isFairyMode;
+      this.initDarkAmbient();
       
       this.isPlaying = true;
     } catch (e) {
@@ -96,86 +90,6 @@ export class AudioController {
     this.oscillators = [osc1, osc2, lfo];
   }
 
-  private initSeinfeld() {
-    if (!this.ctx) return;
-
-    this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.setValueAtTime(0.35, this.ctx.currentTime);
-    this.masterGain.connect(this.ctx.destination);
-
-    // Classic Seinfeld-style slap bass riff notes (frequencies in Hz)
-    // Pattern inspired by the iconic bass lick: funky, syncopated, playful
-    const riff = [
-      { freq: 196.0, dur: 0.12, rest: 0.08 },  // G3 - pop
-      { freq: 246.9, dur: 0.10, rest: 0.05 },  // B3 - slap
-      { freq: 293.7, dur: 0.15, rest: 0.10 },  // D4 - thump
-      { freq: 246.9, dur: 0.08, rest: 0.04 },  // B3 - quick
-      { freq: 196.0, dur: 0.12, rest: 0.15 },  // G3 - pop
-      { freq: 164.8, dur: 0.18, rest: 0.08 },  // E3 - low walk
-      { freq: 196.0, dur: 0.10, rest: 0.05 },  // G3 - bounce
-      { freq: 220.0, dur: 0.14, rest: 0.12 },  // A3 - lead into
-      { freq: 246.9, dur: 0.20, rest: 0.30 },  // B3 - land and breathe
-      { freq: 0,     dur: 0,    rest: 0.40 },   // pause
-    ];
-
-    const playRiff = () => {
-      if (!this.ctx || !this.masterGain) return;
-      // Allow the first iteration to run even if isPlaying hasn't been flipped yet
-      // but stop subsequent iterations if it's been stopped
-      if (this.loopTimer !== null && !this.isPlaying) return;
-
-      let time = this.ctx.currentTime;
-
-      for (const note of riff) {
-        if (note.freq === 0) {
-          time += note.rest;
-          continue;
-        }
-
-        // Create a short, punchy bass note (slap bass timbre)
-        const osc = this.ctx.createOscillator();
-        osc.type = 'square'; // Bright, punchy
-        osc.frequency.setValueAtTime(note.freq, time);
-
-        // Sub oscillator for bass weight
-        const sub = this.ctx.createOscillator();
-        sub.type = 'sine';
-        sub.frequency.setValueAtTime(note.freq / 2, time);
-
-        // Envelope for the "slap" attack
-        const env = this.ctx.createGain();
-        env.gain.setValueAtTime(0, time);
-        env.gain.linearRampToValueAtTime(0.6, time + 0.005); // Instant attack
-        env.gain.exponentialRampToValueAtTime(0.01, time + note.dur); // Quick decay
-
-        // Bandpass filter for that nasal, funky tone
-        const bpf = this.ctx.createBiquadFilter();
-        bpf.type = 'bandpass';
-        bpf.frequency.setValueAtTime(800, time);
-        bpf.Q.setValueAtTime(2, time);
-
-        // Route: osc -> filter -> envelope -> master
-        osc.connect(bpf);
-        bpf.connect(env);
-        sub.connect(env);
-        env.connect(this.masterGain);
-
-        osc.start(time);
-        sub.start(time);
-        osc.stop(time + note.dur + 0.05);
-        sub.stop(time + note.dur + 0.05);
-
-        time += note.dur + note.rest;
-      }
-
-      // Schedule the next loop
-      const riffDuration = riff.reduce((sum, n) => sum + n.dur + n.rest, 0);
-      this.loopTimer = window.setTimeout(playRiff, riffDuration * 1000);
-    };
-
-    playRiff();
-  }
-
   public stop() {
     this.oscillators.forEach(osc => {
       try { osc.stop(); } catch { /* already stopped */ }
@@ -217,26 +131,24 @@ export class AudioController {
     master.gain.value = 0.5;
     master.connect(tempCtx.destination);
 
-    if (this.isSeinfeldMode) {
-      // Sad trombone: Wah wah wahhh
+    if (this.isFairyMode) {
+      // High pitched sad fairy chime
       const notes = [
-        { freq: 311.13, dur: 0.4 }, // Eb4
-        { freq: 293.66, dur: 0.4 }, // D4
-        { freq: 277.18, dur: 0.4 }, // Db4
-        { freq: 261.63, dur: 1.2 }, // C4
+        { freq: 1046.50, dur: 0.2 }, // C6
+        { freq: 987.77, dur: 0.2 },  // B5
+        { freq: 932.33, dur: 0.6 },  // Bb5
       ];
 
       let time = tempCtx.currentTime;
       notes.forEach((note, i) => {
         const osc = tempCtx.createOscillator();
-        osc.type = 'sawtooth'; // brassy
+        osc.type = 'sine';
         
         const env = tempCtx.createGain();
         env.gain.setValueAtTime(0, time);
-        env.gain.linearRampToValueAtTime(0.5, time + 0.05);
+        env.gain.linearRampToValueAtTime(0.3, time + 0.05);
         
         if (i === notes.length - 1) {
-          // the final "wahhh" bends down and fades slowly
           osc.frequency.setValueAtTime(note.freq, time);
           osc.frequency.exponentialRampToValueAtTime(note.freq * 0.8, time + note.dur);
           env.gain.exponentialRampToValueAtTime(0.01, time + note.dur);
@@ -252,7 +164,6 @@ export class AudioController {
         time += note.dur;
       });
 
-      // Close context after sound finishes
       setTimeout(() => tempCtx.close(), time * 1000 + 500);
 
     } else {

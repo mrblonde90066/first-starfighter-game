@@ -8,13 +8,20 @@ interface ScenarioData {
   modules: string[];
 }
 
-function buildSystemPrompt(scenario: ScenarioData, difficulty: string, playstyle: string): string {
+function buildSystemPrompt(scenario: ScenarioData, difficulty: string, playstyle: string, isFairyMode: boolean): string {
   const isGuided = playstyle === 'Guided';
 
-  return `You are the AI Game Master for "First Starfighter," a dark, atmospheric military strategy game inspired by Robotech and HR Giger aesthetics.
+  const fairyTheme = `You are the AI Game Master for a violent, tactical war game set in the "Rainbow Sparkles Galaxy".
+The player commands a Fairy Army instead of drones. 
+Enemies are magical creatures like Unicorns, Princesses, and Care Bears.
+The violence MUST be described with extreme tactical seriousness and gritty realism, but substituting oil/shrapnel with glitter, rainbows, sparkles, and magic.`;
+
+  const cyberTheme = `You are the AI Game Master for "First Starfighter," a dark, atmospheric military strategy game inspired by Robotech and HR Giger aesthetics.`;
+
+  return `${isFairyMode ? fairyTheme : cyberTheme}
 
 CORE RULES:
-1. The player commands ${scenario.droneCount} Vanguard aerial drones with Active Modules: ${scenario.modules.join(", ")}.
+1. The player commands ${scenario.droneCount} ${isFairyMode ? 'Combat Fairies' : 'Vanguard aerial drones'} with Active Modules: ${scenario.modules.join(", ")}.
 2. The player describes their strategy in broad strokes. You evaluate it, simulate the outcome, and narrate cinematically.
 3. You must use the Virtual Dice Roll + Modifier system for EVERY tactical outcome:
    - Evaluate the player's tactic against the situation. Assign a modifier between -5 and +5.
@@ -71,10 +78,10 @@ export default async (req: Request) => {
   }
 
   try {
-    const { strategy, difficulty, playstyle, scenario, conversationHistory } = await req.json();
+    const { strategy, difficulty, playstyle, scenario, isFairyMode, conversationHistory } = await req.json();
 
     const ai = new GoogleGenAI({ apiKey });
-    const systemPrompt = buildSystemPrompt(scenario, difficulty, playstyle);
+    const systemPrompt = buildSystemPrompt(scenario, difficulty, playstyle, isFairyMode || false);
 
     // Build the message history for the model
     const contents = [

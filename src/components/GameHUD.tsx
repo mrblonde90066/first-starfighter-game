@@ -9,6 +9,7 @@ interface GameHUDProps {
   playerCount: string
   playstyle: string
   scenario: Scenario
+  isFairyMode: boolean
   onEndGame: () => void
 }
 
@@ -18,7 +19,7 @@ interface LogEntry {
   timestamp: string
 }
 
-export default function GameHUD({ difficulty, playerCount, playstyle, scenario, onEndGame }: GameHUDProps) {
+export default function GameHUD({ difficulty, playerCount, playstyle, scenario, isFairyMode, onEndGame }: GameHUDProps) {
   const [strategy, setStrategy] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [missionResult, setMissionResult] = useState<'ongoing' | 'victory' | 'defeat'>('ongoing')
@@ -84,6 +85,7 @@ export default function GameHUD({ difficulty, playerCount, playstyle, scenario, 
           playerCount,
           playstyle,
           scenario,
+          isFairyMode,
           conversationHistory: updatedHistory,
         }),
       })

@@ -79,4 +79,27 @@
     z-index: 50;
     opacity: 0.15;
   }
+
+  .fairy-mode {
+    filter: hue-rotate(200deg) saturate(1.5);
+  }
+
+  .fairy-mode::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10%), radial-gradient(circle, #fff 10%, transparent 10%);
+    background-size: 50px 50px;
+    background-position: 0 0, 25px 25px;
+    opacity: 0.1;
+    mix-blend-mode: screen;
+    animation: twinkle 3s infinite alternate;
+    z-index: 50;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.05; transform: scale(1); }
+    100% { opacity: 0.2; transform: scale(1.05); }
+  }
 }
